@@ -1,0 +1,138 @@
+/* 
+	Site Layout
+*/
+
+.container {
+}
+
+.sidebar {
+	outline: 1px solid black;
+	width: 250px;
+	height: 100%;
+	float: left;
+}
+
+.main {
+	outline: 1px solid black;
+	width: auto;
+	height: 100%;
+	overflow: hidden;
+}
+
+.logo {
+	height: 100px;
+	width: 100%;
+	float: left;
+	background-color: #00FF8A;
+	font-size: 6em;
+	text-align:center;
+}
+
+.nav-container {
+	background-color: #222;
+	height: 100%;
+}
+
+.content {
+	outline: 1px solid black;
+	height: 100%;
+}
+
+.messages {
+	padding-left:20px;
+	padding-top:10px;
+	outline: 1px solid black;
+	height: 90px;
+	text-align:left;
+}
+
+.messages ul {
+	list-style-type: square;
+    padding-left: 20px;
+	color: red;
+}
+
+
+
+
+
+
+/*
+	Sidebar Styles
+*/
+
+ul.nav li {
+    text-indent: 20px;
+    line-height: 40px;
+}
+
+ul.nav li a {
+    display: block;
+    text-decoration: none;
+    color: #999999;
+	background-color: #222;
+		padding-right: 20px;
+}
+
+ul.nav li a:hover {
+    text-decoration: none;
+    color: #fff;
+    background: #444;
+}
+
+ul.nav li a:active,
+ul.nav li a:focus {
+    text-decoration: none;
+}
+
+ul.nav > li ul {
+	display: none;
+	position: absolute;
+	left: 250px;
+	margin-top: -40px;
+}
+
+ul.nav > li:hover ul {
+	display: block;
+}
+
+
+
+
+
+/*
+	General HTML styles
+*/
+
+* {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	vertical-align: baseline;
+	box-sizing: border-box;
+}
+
+*, *:before, *:after {
+	box-sizing: inherit;
+}
+
+body {
+	line-height: 1;
+}
+
+ol, ul {
+	list-style: none;
+}
+
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+
+table td {
+    padding: 6px;
+}
+
+input, select {
+	outline: 1px solid black;	
+}
