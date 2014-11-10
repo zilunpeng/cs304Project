@@ -33,12 +33,16 @@ Hence, each page is broken down into three parts:
 
 
 
-	// Connect to database
+	/**************************************************************
+	Connect to database
+	**************************************************************/
 	$con = connectToDatabase();
 	
 
 
-	// Perform requested operations from HTML forms here
+	/**************************************************************
+	Perform requested operations from HTML form here
+	**************************************************************/
 	if ($_SERVER["REQUEST_METHOD"] == "POST") {
 		
 		// OPERATION: User pressed the login button
@@ -50,11 +54,15 @@ Hence, each page is broken down into three parts:
 	
 	
 	
-	// Perform all remaining database queries here
+	/**************************************************************
+	Perform all remaining database queries here
+	**************************************************************/
 	
 	
 	
-	// Close database connection
+	/**************************************************************
+	Close database connection
+	**************************************************************/
 	disconnectFromDatabase($con)
 	
 	

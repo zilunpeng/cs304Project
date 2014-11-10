@@ -33,24 +33,36 @@ Hence, each page is broken down into three parts:
 
 
 
-	// Connect to database
+	/**************************************************************
+	Connect to database
+	**************************************************************/
 	$con = connectToDatabase();
 	
 
 
-	// Perform requested operations from HTML form here
+	/**************************************************************
+	Perform requested operations from HTML form here
+	**************************************************************/
 	if ($_SERVER["REQUEST_METHOD"] == "POST") {
 		
-		// OPERATION: User pressed the "remove from cart" button
+		// OPERATION: User pressed the "purchase" button
 		if (isset($_POST["purchase"])) {
+			setFormSESSIONVariables();
 			purchase($_POST["creditcardnumber"], $_POST["creditcardexpiry"], $con);
 		}
 		
 	}
+	// If this is the first time the page is loaded (i.e. user has
+	// not yet submitted a form), then clear out the saved form data.
+	if ($_SERVER["REQUEST_METHOD"] != "POST") {
+		unsetFormSESSIONVariables();
+	}
 	
 	
 	
-	// Perform all remaining database queries here
+	/**************************************************************
+	Perform all remaining database queries here
+	**************************************************************/
 	$items = getItemInformation($con, array_column($_SESSION["cart"], "upc"));
 	$subtotal = getSubTotal($items, array_column($_SESSION["cart"], "quantity"));
 	$gst = getGST($subtotal);
@@ -59,7 +71,9 @@ Hence, each page is broken down into three parts:
 	
 
 	
-	// Close database connection
+	/**************************************************************
+	Close database connection
+	**************************************************************/
 	disconnectFromDatabase($con)
 	
 	
@@ -309,6 +323,34 @@ Hence, each page is broken down into three parts:
 ***********************************************************************
 -->
 <?php
+
+
+
+	/**************************************************************************
+		Saves the contents of form elements into SESSION variables.
+		
+		Recall that when the user clicks a button in a form, the page is
+		reloaded.  Normally, each time the page is reloaded, the form elements
+		are blanked-out.
+		
+		However, by saving the contents of each form element into SESSION
+		variables, the contents of the form elements can be restored to what
+		they were before the page was reloaded.
+	**************************************************************************/
+	function setFormSESSIONVariables() {
+		$_SESSION["creditcardnumber"] = $_POST["creditcardnumber"];
+		$_SESSION["creditcardexpiry"] = $_POST["creditcardexpiry"];
+	}
+
+
+
+	/**************************************************************************
+		Clears the SESSION variables that stored the saved form data.
+	**************************************************************************/
+	function unsetFormSESSIONVariables() {
+		$_SESSION["creditcardnumber"] = "";
+		$_SESSION["creditcardexpiry"] = "";
+	}
 	
 	
 	
@@ -373,7 +415,7 @@ Hence, each page is broken down into three parts:
 			return;
 		}
 	
-		// ERROR: No credit card number was given
+		// ERROR: The shopping cart is empty
 		if (count($_SESSION["cart"]) == 0) {
 			addToMessages("Your cart is empty");
 			return;
@@ -429,7 +471,9 @@ Hence, each page is broken down into three parts:
 		// Empty the shopping cart
 		$_SESSION["cart"] = array();
 		
-		queryPurchaseItem($con, $purchase["receiptId"]);
+		
+		// Clear out the credit card information
+		unsetFormSESSIONVariables();
 		
 		
 		// Print success message

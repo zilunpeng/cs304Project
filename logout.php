@@ -33,20 +33,28 @@ Hence, each page is broken down into three parts:
 
 
 
-	// Connect to database
+	/**************************************************************
+	Connect to database
+	**************************************************************/
 	
 
 
-	// Perform requested operations
+	/**************************************************************
+	Perform requested operations from HTML form here
+	**************************************************************/
 	logout();
 	
 	
 	
-	// Perform all remaining database queries here
+	/**************************************************************
+	Perform all remaining database queries here
+	**************************************************************/
 	
 	
 	
-	// Close database connection
+	/**************************************************************
+	Close database connection
+	**************************************************************/
 	
 	
 	

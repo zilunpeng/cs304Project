@@ -39,11 +39,10 @@ Hence, each page is broken down into three parts:
 	$con = connectToDatabase();
 	
 	
-	
+		
 	/**************************************************************
 	Perform requested operations from HTML form here
 	**************************************************************/
-	$items = array();
 	if ($_SERVER["REQUEST_METHOD"] == "POST") {
 		
 		// OPERATION: User pressed the "add to cart" button
@@ -53,22 +52,22 @@ Hence, each page is broken down into three parts:
 		
 		// OPERATION: User pressed the "search" button
 		if (isset($_POST["search"])) {
-			setSearchSESSIONVariables();
-			$items = search($con, $_SESSION["title"], $_SESSION["category"], $_SESSION["leadsinger"], $_SESSION["quantity"]);
+			setFormSESSIONVariables();
 		}
 		
 	}
-	else {
-		unsetSearchSESSIONVariables();
+	// If this is the first time the page is loaded (i.e. user has
+	// not yet submitted a form), then clear out the saved form data.
+	if ($_SERVER["REQUEST_METHOD"] != "POST") {
+		unsetFormSESSIONVariables();
 	}
 	
-	if (!isset($_POST["search"]) && $_SESSION["quantity"] != "")
-		$items = search($con, $_SESSION["title"], $_SESSION["category"], $_SESSION["leadsinger"], $_SESSION["quantity"]);
 	
 	
 	/**************************************************************
 	Perform all remaining database queries here
 	**************************************************************/
+	$items = search($con, $_SESSION["title"], $_SESSION["category"], $_SESSION["leadsinger"], $_SESSION["quantity"]);
 	
 	
 	
@@ -341,16 +340,35 @@ Hence, each page is broken down into three parts:
 
 
 
-	function setSearchSESSIONVariables() {
+	/**************************************************************************
+		Saves the contents of form elements into SESSION variables.
+		
+		Recall that when the user clicks a button in a form, the page is
+		reloaded.  Normally, each time the page is reloaded, the form elements
+		are blanked-out.
+		
+		However, by saving the contents of each form element into SESSION
+		variables, the contents of the form elements can be restored to what
+		they were before the page was reloaded.
+	**************************************************************************/
+	function setFormSESSIONVariables() {
 		$_SESSION["title"] = $_POST["title"];
 		$_SESSION["category"] = $_POST["category"];
 		$_SESSION["leadsinger"] = $_POST["leadsinger"];
 		$_SESSION["quantity"] = $_POST["quantity"];
+		
+		// ERROR: user left the quantity field blank
+		if ($_SESSION["quantity"] == "") {
+			addToMessages("You must enter a quantity");
+		}
 	}
 
 
 
-	function unsetSearchSESSIONVariables() {
+	/**************************************************************************
+		Clears the SESSION variables that stored the saved form data.
+	**************************************************************************/
+	function unsetFormSESSIONVariables() {
 		$_SESSION["title"] = "";
 		$_SESSION["category"] = "";
 		$_SESSION["leadsinger"] = "";
@@ -382,8 +400,9 @@ Hence, each page is broken down into three parts:
 		}
 		
 		// ERROR: user left the quantity field blank
+		// NOTE: An error has already been printed by the
+		// setFormSESSIONVariables() function.
 		if (empty($quantity)) {
-			addToMessages("You must enter a quantity");
 			return array();
 		}
 		
@@ -479,11 +498,11 @@ Hence, each page is broken down into three parts:
 
 
 	/**************************************************************************
-		Removes the specified item from the cart.
+		Adds the specified item to the cart.
 		No changes are made to the database.
 		
 		On success, a success message is printed, and the specified item is
-		removed from the cart array stored in $_SESSION["cart"].
+		added to the cart array stored in $_SESSION["cart"].
 		
 		@param $item
 			The a string of the form "upc#quantity"
@@ -509,9 +528,6 @@ Hence, each page is broken down into three parts:
 	/**************************************************************************
 		Removes the specified item from the cart.
 		No changes are made to the database.
-		
-		On success, a success message is printed, and the specified item is
-		removed from the cart array stored in $_SESSION["cart"].
 		
 		@param $upc
 			The item to remove

@@ -137,8 +137,8 @@
 		@param $con
 			The connection to the database
 	**************************************************************************/
-	function queryCustomer($con, $upc) {
-		$customerArray = queryCustomers($con, array($upc));
+	function queryCustomer($con, $cid) {
+		$customerArray = queryCustomers($con, array($cid));
 		return $customerArray[0]["result"];
 	}
 	
@@ -247,8 +247,8 @@
 		
 		No changes are made to the database.
 
-		@param $purchase
-			The purchase to query
+		@param $receiptId
+			The receiptId to query
 		
 		@param $con
 			The connection to the database
@@ -397,32 +397,7 @@
 		@param $con
 			The connection to the database
 	**************************************************************************/
-	function queryPurchaseItem($con, $receiptId) {
-		$purchaseItemArray = queryPurchaseItems($con, array($receiptId));
-		return $purchaseItemArray[0]["result"];
-	}
-	
-	
-	
-	/**************************************************************************
-		Queries the database for PurchaseItems with the given receiptId.
-		
-		Returns an array where each entry has the form
-				array("receiptId", "result")
-		where "result" indexes an array of the form 
-				array("receiptId", "upc", "quantity")
- 
-		If an particular purchaseItem is not found, then the "result" is null.
-		
-		No changes are made to the database.
-
-		@param $receiptIds
-			An array of receiptIds to query
-		
-		@param $con
-			The connection to the database
-	**************************************************************************/
-	function queryPurchaseItems($con, $receiptIds) {
+	function queryPurchaseItems($con, $receiptId) {
 	
 		// The array of purchaseItems to return
 		$purchaseItems = array();
@@ -434,44 +409,23 @@
 		$query = $con->prepare("SELECT receiptId, upc, quantity FROM purchaseItem WHERE receiptId=?");
 		$query->bind_param("s", $receiptId);
 		$query->bind_result($result["receiptId"], $result["upc"], $result["quantity"]);
-		
-		// Executing the query statement for every upc in the given array
-		for($x = 0; $x < count($receiptIds); $x++) {
-		
-			// Execute the query for the current upc
-			$receiptId = $receiptIds[$x];
-			$query->execute();
-			$query->fetch();
+
+		$query->execute();
+		$query->fetch();
 			
-			// If the current receiptId is not found...
-			if (count($result["receiptId"]) == 0) {
-				array_push($purchaseItems,
-					array(
-						"receiptId"=>$receiptId,
-						"result"=>null
-					)
-				);
-			}
-			// Otherwise, purchaseItem information is retrieved.
-			else {
-				$purchaseItemArrayForGivenReceiptId = array();
-				for ($y = 0; $y < count($result["upc"]); $y++) {
-					array_push($purchaseItemArrayForGivenReceiptId,
-						array(
-							"receiptId"=>$result["receiptId"][$y],
-							"upc"=>$result["upc"][$y],
-							"quantity"=>$result["quantity"][$y]
-						)
-					);
-				}
-				array_push($purchaseItems,
-					array(
-						"receiptId"=>$receiptId,
-						"result"=>$purchaseItemArrayForGivenReceiptId
-					)
-				);
-			}
+		// If the current receiptId is not found...
+		if (count($result["receiptId"]) == 0) {
+			return array();
 		}
+
+		// Otherwise, purchaseItem information is retrieved.
+		array_push($purchaseItems,
+			array(
+				"receiptId"=>$receiptId,
+				"upc"=>$result["upc"],
+				"quantity"=>$result["quantity"]
+			)
+		);
 		
 		return $purchaseItems;
 		
@@ -497,6 +451,205 @@
 		// The insert statement for each new PurchaseItem entity
 		$insert = $con->prepare('INSERT INTO purchaseItem (receiptId, upc, quantity) VALUES (?, ?, ?)');
 		$insert->bind_param("isi", $receiptId, $upc, $quantity);
+		
+		// Executing the insert statement for each item
+		for ($x = 0; $x < count($items); $x++) {
+			$upc = $items[$x]["upc"];
+			$quantity = $items[$x]["quantity"];
+			$insert->execute();
+		}
+		
+	}
+
+	
+	
+	/**************************************************************************
+		Queries the database for the return with the given retId.
+		
+		If the purchase is found, the function returns an array of the form
+				array("retId", "date", "receiptId")
+					  
+		If the return is not found, null is returned
+		
+		No changes are made to the database.
+
+		@param $retId
+			The retId to query
+		
+		@param $con
+			The connection to the database
+	**************************************************************************/
+	function queryReturn($con, $retId) {
+		$returnArray = queryReturns($con, array($retId));
+		return $returnArray[0]["result"];
+	}
+	
+	
+	
+	/**************************************************************************
+		Queries the database for returns with the given retIds.
+		
+		Returns an array where each entry has the form
+				array("retId", "result")
+		where "result" indexes an array of the form 
+				array("retId", "date", "receiptId")
+					  
+		If an particular return	is not found, then the "result" is null.
+		
+		No changes are made to the database.
+
+		@param $retIds
+			An array of retIds to query
+		
+		@param $con
+			The connection to the database
+	**************************************************************************/
+	function queryReturns($con, $retIds) {
+	
+		// The array of returns to return
+		$returns = array();
+	
+		// The array containing the results of the query
+		$result = array("retId"=>array(), "returnDate"=>array(), "receiptId"=>array());
+		
+		// The prepared statement
+		$query = $con->prepare('SELECT retId, returnDate, receiptId FROM returns WHERE retId=?');
+		$query->bind_param("i", $retId);
+		$query->bind_result($result["retId"], $result["returnDate"], $result["receiptId"]);
+		
+		// Executing the query statement for every retId in the given array
+		for($x = 0; $x < count($retIds); $x++) {
+		
+			// Execute the query for the current retId
+			$retId = $retIds[$x];
+			$query->execute();
+			$query->fetch();
+			
+			// If the current retId is not found...
+			if (count($result["retId"]) == 0) {
+				array_push($returns,
+					array(
+						"retId"=>$retId,
+						"result"=>null
+					)
+				);
+			}
+			// Otherwise, item information is retrieved.
+			else {
+				array_push($returns,
+					array(
+						"retId"=>$retId,
+						"result"=>
+							array(
+								"retId"=>$result["retId"],
+								"returnDate"=>$result["returnDate"],
+								"receiptId"=>$result["receiptId"],
+							)
+					)
+				);
+			}
+		}
+		
+		return $returns;
+		
+	}
+	
+	
+	
+	/**************************************************************************
+		Creates a new return in the return table, and returns the retId.
+		
+		@param $receiptId
+			The receiptId for the purchase the return is based on
+		
+		@param $con
+			The connection to the database
+	**************************************************************************/
+	function insertIntoReturn($con, $receiptId) {
+	
+		// The insert statement for the new return entity
+		$insert = $con->prepare('INSERT INTO returns (returnDate, receiptId) VALUES ((Select CURDATE()), ?)');
+		$insert->bind_param("s", $receiptId);
+		$insert->execute();
+		
+		// Return the receiptId
+		return mysqli_insert_id($con);
+		
+	}
+	
+	
+	
+	/**************************************************************************
+		Queries the database for the ReturnItems with the given retId.
+		
+		If ReturnItems are found, the function returns an array where every
+		element is an array of the form
+				array("retId", "upc", "quantity")
+					  
+		If ReturnItems are not found, null is returned
+		
+		No changes are made to the database.
+
+		@param $retId
+			The retId to query
+		
+		@param $con
+			The connection to the database
+	**************************************************************************/
+	function queryReturnItems($con, $retId) {
+	
+		// The array of returnItems to return
+		$returnItems = array();
+	
+		// The array containing the results of the query
+		$result = array("retId"=>array(), "upc"=>array(), "quantity"=>array()); 
+		
+		// The prepared statement
+		$query = $con->prepare("SELECT retId, upc, quantity FROM returnItem WHERE retId=?");
+		$query->bind_param("s", $retId);
+		$query->bind_result($result["retId"], $result["upc"], $result["quantity"]);
+
+		$query->execute();
+		$query->fetch();
+			
+		// If the current retId is not found...
+		if (count($result["retId"]) == 0) {
+			return array();
+		}
+
+		// Otherwise, returnItem information is retrieved.
+		array_push($returnItems,
+			array(
+				"retId"=>$retId,
+				"upc"=>$result["upc"],
+				"quantity"=>$result["quantity"]
+			)
+		);
+		
+		return $returnItems;
+		
+	}
+	
+	
+	
+	/**************************************************************************
+		Creates a new returnItem in the returnItem table with the given
+		retId for every item in the given array.
+		
+		@param $retId
+			The retId for the returnItem
+		
+		@param $items
+			An array of (upc,quantity) pairs.
+		
+		@param $con
+			The connection to the database
+	**************************************************************************/
+	function insertIntoReturnItem($con, $retId, $items) {
+
+		// The insert statement for each new returnItem entity
+		$insert = $con->prepare('INSERT INTO returnItem (retId, upc, quantity) VALUES (?, ?, ?)');
+		$insert->bind_param("isi", $retId, $upc, $quantity);
 		
 		// Executing the insert statement for each item
 		for ($x = 0; $x < count($items); $x++) {

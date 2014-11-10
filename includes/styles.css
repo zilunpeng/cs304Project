@@ -16,7 +16,7 @@
 	outline: 1px solid black;
 	width: auto;
 	height: 100%;
-	overflow: hidden;
+	overflow: scroll;
 }
 
 .logo {
