@@ -22,18 +22,16 @@ Hence, each page is broken down into three parts:
 	// Connect to database
 	$con = connectToDatabase();
 
-	$order = NULL;
-	$items = NULL;
+	$itemToAdd = array();
+	$formIsValid = true;
 	
 	// Perform requested operations from HTML form here
-	if ($_SERVER["REQUEST_METHOD"] == "GET") {
-		if (isset($_GET["receiptID"])) {
-			global $order, $items;
-			$id = $_GET["receiptID"];
-			$order = getOrder($con, $id);
-			$items = getOrderItems($con, $id);
-		}
+	if ($_SERVER["REQUEST_METHOD"] == "POST") {
+
 	}
+	
+	// Perform all remaining database queries here
+	$items = getItems($con);
 	
 	// Close database connection
 	disconnectFromDatabase($con)
@@ -57,7 +55,7 @@ Hence, each page is broken down into three parts:
 	<script></script>
 
 	<!-- Page title -->
-	<title>View Order</title>
+	<title> View Cart </title>
 </head>
 
 <body>
@@ -80,9 +78,14 @@ Hence, each page is broken down into three parts:
 			</div>
 
 			<div class="content">
-				<div class="header">ORDER INFORMATION</div>
-				<!-- Order Info -->
-				<?php global $order, $items; printOrder($order); printOrder($items); ?>
+			
+				<div class="header">ITEMS LIST</div>
+				<!-- Items -->
+				<?php createItemList($items); ?>
+				
+				<div class="header">ADD ITEM</div>
+				<!-- Add Item Form -->
+				<?php createAddItemForm(); ?>
 			</div>
 		</div>
 	</div>
@@ -92,29 +95,9 @@ Hence, each page is broken down into three parts:
 <?php
 	// MODEL
 	// ===============
-	
-	function getOrderItems($con, $id) {
-		$statement = $con->prepare("SELECT * FROM purchaseitem INNER JOIN item ON purchaseitem.upc=item.upc WHERE receiptId = ?");
-		$statement->bind_param("i", $id);
-		$statement->execute();
-		$result = $statement->get_result();
-		return $result;
-	}
-	
-	function getOrder($con, $id) {
-		$statement = $con->prepare("SELECT * FROM purchase INNER JOIN customer ON purchase.cid=customer.cid WHERE purchase.receiptId = ?");
-		$statement->bind_param("i", $id);
-		$statement->execute();
-		$result = $statement->get_result();
-		return $result;
-	}
-	
-	function printOrder($order) {
-		echo "<pre>";
-		while($row = mysqli_fetch_array($order, MYSQL_ASSOC)) {
-			print_r($row);
-		}
-		echo "</pre>";
+
+	function handleAddItem() {
+
 	}
 
 ?>
