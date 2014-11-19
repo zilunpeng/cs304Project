@@ -78,13 +78,12 @@ Hence, each page is broken down into three parts:
 			</div>
 
 			<div class="content">
-				<!-- Heading -->
-				<div class="header">
-					ITEMS LIST
-				</div>
+			
+				<div class="header">ITEMS LIST</div>
 				<!-- Items -->
 				<?php createItemList($items); ?>
 				
+				<div class="header">ADD ITEM</div>
 				<!-- Add Item Form -->
 				<?php createAddItemForm(); ?>
 			</div>
@@ -98,7 +97,21 @@ Hence, each page is broken down into three parts:
 	// ===============
 
 	function createAddItemForm() {
-	
+	?>
+		<form action="additem.php" method="post">
+		<table>
+			<tr><td align="right">UPC</td><td align="left"><input type="text" name="upc"></td></tr>
+			<tr><td align="right">Title</td><td align="left"><input type="text" name="title"></td></tr>
+			<tr><td align="right">Type</td><td align="left"><input type="text" name="type"></td></tr>
+			<tr><td align="right">Category</td><td align="left"><input type="text" name="category"></td></tr>
+			<tr><td align="right">Company</td><td align="left"><input type="text" name="company"></td></tr>
+			<tr><td align="right">Year</td><td align="left"><input type="text" name="year"></td></tr>
+			<tr><td align="right">Price</td><td align="left"><input type="text" name="price"></td></tr>
+			<tr><td align="right">Stock</td><td align="left"><input type="text" name="stock"></td></tr>
+			<tr><td></td><td><input type="submit"></td></tr>
+			</table>
+		</form>
+	<?php
 	}
 	
 	function createItemList($items) {
