@@ -13,7 +13,7 @@
 	On failure, an error message is printed and null is returned.
 **************************************************************************/
 function connectToDatabase() {
-	$con = @new mysqli("localhost", "root", "cpsc304", "ams");
+	$con = @new mysqli("localhost", "root", "", "ams");
 	if ($con->connect_error) {
 		addToMessages ("Failed to connect to the database");
 		return null;
