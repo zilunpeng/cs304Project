@@ -58,7 +58,7 @@ Hence, each page is broken down into three parts:
 	<script></script>
 
 	<!-- Page title -->
-	<title> View Cart </title>
+	<title>Manage Items</title>
 </head>
 
 <body>
@@ -124,7 +124,7 @@ Hence, each page is broken down into three parts:
 			<tr><td align="right">Category</td><td align="left"><input type="text" name="category" value="<?php echo ((isset($itemToAdd["category"]) && ($formIsValid == false)) ? $itemToAdd["category"] : "") ?>"></td></tr>
 			<tr><td align="right">Company</td><td align="left"><input type="text" name="company" value="<?php echo ((isset($itemToAdd["company"]) && ($formIsValid == false)) ? $itemToAdd["company"] : "") ?>"></td></tr>
 			<tr><td align="right">Year</td><td align="left"><input type="text" name="year" value="<?php echo ((isset($itemToAdd["year"]) && ($formIsValid == false)) ? $itemToAdd["year"] : "") ?>"></td></tr>
-			<tr><td align="right">Price</td><td align="left"><input type="text" name="price" value="<?php echo ((isset($itemToAdd["price"]) && ($formIsValid == false)) ? $itemToAdd["price"] : "") ?>"></td></tr>
+			<tr><td align="right">Price</td><td align="left"><input type="text" name="price" value="<?php echo ((isset($itemToAdd["price"]) && ($formIsValid == false)) ? number_format($itemToAdd["price"],2) : "") ?>"></td></tr>
 			<tr><td align="right">Stock</td><td align="left"><input type="text" name="stock" value="<?php echo ((isset($itemToAdd["stock"]) && ($formIsValid == false)) ? $itemToAdd["stock"] : "") ?>"></td></tr>
 			<tr><td></td><td><input type="submit"></td></tr>
 			</table>
@@ -153,7 +153,7 @@ Hence, each page is broken down into three parts:
 			echo "<td>" . $row["category"] . "</td>";
 			echo "<td>" . $row["company"] . "</td>";
 			echo "<td>" . $row["year"] . "</td>";
-			echo "<td>" . $row["price"] . "</td>";
+			echo "<td>" . number_format($row["price"],2) . "</td>";
 			echo "<td>" . $row["stock"] . "</td>";
 			echo "</tr>";
 		}
