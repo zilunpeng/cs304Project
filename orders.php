@@ -31,7 +31,7 @@ Hence, each page is broken down into three parts:
 	}
 	
 	// Perform all remaining database queries here
-	// $items = getItems($con);
+	$items = getItems($con);
 	
 	// Close database connection
 	disconnectFromDatabase($con)
@@ -55,7 +55,7 @@ Hence, each page is broken down into three parts:
 	<script></script>
 
 	<!-- Page title -->
-	<title>View Orders</title>
+	<title> View Cart </title>
 </head>
 
 <body>
@@ -79,10 +79,13 @@ Hence, each page is broken down into three parts:
 
 			<div class="content">
 			
-				<div class="header">ORDERS</div>
+				<div class="header">ITEMS LIST</div>
 				<!-- Items -->
-				<?php //createItemList($items); ?>
+				<?php createItemList($items); ?>
 				
+				<div class="header">ADD ITEM</div>
+				<!-- Add Item Form -->
+				<?php createAddItemForm(); ?>
 			</div>
 		</div>
 	</div>
