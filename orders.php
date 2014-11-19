@@ -22,16 +22,8 @@ Hence, each page is broken down into three parts:
 	// Connect to database
 	$con = connectToDatabase();
 
-	$itemToAdd = array();
-	$formIsValid = true;
-	
-	// Perform requested operations from HTML form here
-	if ($_SERVER["REQUEST_METHOD"] == "POST") {
-
-	}
-	
 	// Perform all remaining database queries here
-	// $items = getItems($con);
+	$orders = getOrders($con);
 	
 	// Close database connection
 	disconnectFromDatabase($con)
@@ -80,8 +72,8 @@ Hence, each page is broken down into three parts:
 			<div class="content">
 			
 				<div class="header">ORDERS</div>
-				<!-- Items -->
-				<?php //createItemList($items); ?>
+				<!-- Orders -->
+				<?php global $orders; printOrders($orders); ?>
 				
 			</div>
 		</div>
@@ -93,8 +85,17 @@ Hence, each page is broken down into three parts:
 	// MODEL
 	// ===============
 
-	function handleAddItem() {
-
+	function getOrders($con) {
+		$query = "SELECT * FROM purchase INNER JOIN customer ON purchase.cid=customer.cid";
+		$result = mysqli_query($con, $query);
+		return $result;
 	}
 
+	function printOrders($orders) {
+		echo "<pre>";
+		while($row = mysqli_fetch_array($orders, MYSQL_ASSOC)) {
+			print_r($row);
+		}
+		echo "</pre>";
+	}
 ?>
