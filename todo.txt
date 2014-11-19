@@ -1,0 +1,23 @@
+add.php
+	- add functionality to show more than 25 items (pagination)
+	- add an edit entry button (maybe takes user to another page to edit the item info)
+	- 
+
+order.php
+	- add functionality to set the delivered date for items without a delivery date
+
+orders.php
+	- maybe add a filter to show which types of orders to show (all, not delivered, last 30 days, etc.)
+	
+salesreport.php
+	- add functionality for sales report in a date range
+	- maybe find a better date-picker. it's hard to skip to a different year quickly
+	
+topitems.php
+	- all. no implementation yet
+	
+ALL PAGES
+	- fix the layout
+	- fix borders, sizing, font, etc.
+	- remove excess W H I T E S P A C E in the code
+	- echo arrays as a neatly organized table
