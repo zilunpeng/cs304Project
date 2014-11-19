@@ -162,6 +162,7 @@ Hence, each page is broken down into three parts:
 	}
 
 	function getItems($con) {
+		// Currently defaults to limit of 25 items. Need to add pagination, or change LIMIT in the query
 		$query = "SELECT * FROM item";
 		$result = mysqli_query($con, $query);
 		return $result;
