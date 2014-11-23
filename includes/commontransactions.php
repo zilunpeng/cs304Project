@@ -359,7 +359,7 @@
 	function insertIntoPurchase($con, $cid, $creditcardnumber, $creditcardexpiry) {
 	
 		// The purchase date
-		$con->query('SET @maxOrdersPerDay = 10');
+		$con->query('SET @maxOrdersPerDay = 2');
 	
 		// The purchase date
 		$con->query('SET @purchaseDate = (Select CURDATE())');
