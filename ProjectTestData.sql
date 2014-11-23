@@ -8,10 +8,10 @@ use ams;
 drop table if exists item;
 create table item
 	(upc char(3) not null,
-	title varchar(40),
+	title varchar(25),
 	type varchar(20),
 	category varchar(20),
-	company varchar(20),
+	company varchar(25),
 	year integer,
 	price float,
 	stock integer,
@@ -92,7 +92,7 @@ values('003', 'cd3', 'cd', 'rap', 'Wolters Kluwer', 2011, 10.5, 8
  );
  
 insert into item 
-values('004', 'cd4', 'cd', 'country', 'Wolters Kluwer', 2011, 10.5, 8
+values('004', 'cd4ggggggggggggggggggggggggggggggggggggggggggggggggggg', 'cd', 'country', 'Wolters Kluwergggggggggggggggggggggggggggggggggggggggggggggggggggggg', 2011, 10.5, 8
  );
  
 insert into item 
