@@ -74,7 +74,7 @@ Hence, each page is broken down into three parts:
 			<!-- Designated area for all error/success messages (top of page) -->
 			<div class="messages">
 				<!-- heading -->
-				Error/Success Messages:<br>
+				<strong>Error/Success Messages:</strong><br>
 
 				<!-- Error/Success messages (if any) -->
 				<?php printMessages(); ?>
@@ -82,11 +82,12 @@ Hence, each page is broken down into three parts:
 
 			<div class="content">
 			
-				<div class="header">ITEMS LIST</div>
+				<div class="heading">ITEMS LIST</div>
 				<!-- Items -->
 				<?php createItemList($items); ?>
 				
-				<div class="header">ADD ITEM</div>
+				<br>
+				<div class="heading">UPDATE ITEM</div>
 				<!-- Add Item Form -->
 				<?php createAddItemForm(); ?>
 			</div>
@@ -100,15 +101,20 @@ Hence, each page is broken down into three parts:
 	// ===============
 
 	function addItem($con, $item) {
-		$statement = $con->prepare("INSERT INTO item (upc,title,type,category,company,year,price,stock) VALUES (?,?,?,?,?,?,?,?)");
-		$statement->bind_param("sssssidi",$item["upc"],$item["title"],$item["type"],$item["category"],$item["company"],$item["year"],$item["price"],$item["stock"]);
+		if (isset($item["price"])) {
+			$statement = $con->prepare("UPDATE item SET price=?, stock=stock+? WHERE upc=?");
+			$statement->bind_param("dis",$item["price"],$item["qty"],$item["upc"]);
+		} else {
+			$statement = $con->prepare("UPDATE item SET stock=stock+? WHERE upc=?");
+			$statement->bind_param("is",$item["qty"],$item["upc"]);
+		}
 		$result = $statement->execute();
-		
+	
 		if ($result)
-			addToMessages("Item successfully added");
+			addToMessages("Item UPC=" . $item["upc"] . " has been successfully updated");
 		else {
 			global $formIsValid;
-			addToMessages("Error adding item");
+			addToMessages("Unknown error encountered while updating item");
 			$formIsValid = false;
 		}
 	}
@@ -118,22 +124,16 @@ Hence, each page is broken down into three parts:
 		?>
 		<form action="add.php" method="post">
 		<table>
-			<tr><td align="right">UPC</td><td align="left"><input type="text" name="upc" value="<?php echo ((isset($itemToAdd["upc"]) && ($formIsValid == false)) ? $itemToAdd["upc"] : "") ?>"></td></tr>
-			<tr><td align="right">Title</td><td align="left"><input type="text" name="title" value="<?php echo ((isset($itemToAdd["title"]) && ($formIsValid == false)) ? $itemToAdd["title"] : "") ?>"></td></tr>
-			<tr><td align="right">Type</td><td align="left"><input type="text" name="type" value="<?php echo ((isset($itemToAdd["type"]) && ($formIsValid == false)) ? $itemToAdd["type"] : "") ?>"></td></tr>
-			<tr><td align="right">Category</td><td align="left"><input type="text" name="category" value="<?php echo ((isset($itemToAdd["category"]) && ($formIsValid == false)) ? $itemToAdd["category"] : "") ?>"></td></tr>
-			<tr><td align="right">Company</td><td align="left"><input type="text" name="company" value="<?php echo ((isset($itemToAdd["company"]) && ($formIsValid == false)) ? $itemToAdd["company"] : "") ?>"></td></tr>
-			<tr><td align="right">Year</td><td align="left"><input type="text" name="year" value="<?php echo ((isset($itemToAdd["year"]) && ($formIsValid == false)) ? $itemToAdd["year"] : "") ?>"></td></tr>
-			<tr><td align="right">Price</td><td align="left"><input type="text" name="price" value="<?php echo ((isset($itemToAdd["price"]) && ($formIsValid == false)) ? number_format($itemToAdd["price"],2) : "") ?>"></td></tr>
-			<tr><td align="right">Stock</td><td align="left"><input type="text" name="stock" value="<?php echo ((isset($itemToAdd["stock"]) && ($formIsValid == false)) ? $itemToAdd["stock"] : "") ?>"></td></tr>
-			<tr><td></td><td><input type="submit"></td></tr>
+			<tr><td align="right" style="padding-right: 5px;">UPC</td><td align="left"><input type="text" name="upc" value="<?php echo ((isset($itemToAdd["upc"]) && ($formIsValid == false)) ? $itemToAdd["upc"] : "") ?>"></td></tr>
+			<tr><td align="right" style="padding-right: 5px;">Price</td><td align="left"><input type="text" name="price" value="<?php echo ((isset($itemToAdd["price"]) && ($formIsValid == false)) ? number_format($itemToAdd["price"],2) : "") ?>"></td></tr>
+			<tr><td align="right" style="padding-right: 5px;">Quantity</td><td align="left"><input type="text" name="qty" value="<?php echo ((isset($itemToAdd["qty"]) && ($formIsValid == false)) ? $itemToAdd["qty"] : "") ?>"></td></tr>
+			<tr><td></td><td><input type="submit" value="Update"></td></tr>
 			</table>
 		</form>
 		<?php
 	}
 	
 	function createItemList($items) {
-		// echo "<pre>";
 		echo "<table style='width:100%; text-align:center;'>";
 		echo "<tr>";
 		echo "<th>UPC</th>";
@@ -145,7 +145,6 @@ Hence, each page is broken down into three parts:
 		echo "<th>Price</th>";
 		echo "<th>Stock</th>";
 		while ($row = mysqli_fetch_array($items, MYSQL_ASSOC)) {
-			// print_r($row);
 			echo "<tr>";
 			echo "<td>" . $row["upc"] . "</td>";
 			echo "<td>" . $row["title"] . "</td>";
@@ -158,7 +157,6 @@ Hence, each page is broken down into three parts:
 			echo "</tr>";
 		}
 		echo "</table>";
-		// echo "</pre>";
 	}
 
 	function getItems($con) {
@@ -177,47 +175,19 @@ Hence, each page is broken down into three parts:
 			$formIsValid = false;
 			addToMessages("UPC cannot be empty");
 		}
-		if (isset($_POST["title"]) && $_POST["title"] != "")
-			$itemToAdd["title"] = $_POST["title"];
-		else {
-			$formIsValid = false;
-			addToMessages("Title cannot be empty");
+		if (isset($_POST["price"]) && $_POST["price"] != "") {
+			if (is_numeric($_POST["price"]))
+				$itemToAdd["price"] = $_POST["price"];
+			else {
+				$formIsValid = false;
+				addToMessages("Price is invalid");
+			}
 		}
-		if (isset($_POST["type"]) && $_POST["type"] != "")
-			$itemToAdd["type"] = $_POST["type"];
+		if (isset($_POST["qty"]) && $_POST["qty"] != "") 
+			$itemToAdd["qty"] = $_POST["qty"];
 		else {
 			$formIsValid = false;
-			addToMessages("Type cannot be empty");
-		}
-		if (isset($_POST["category"]) && $_POST["category"] != "")
-			$itemToAdd["category"] = $_POST["category"];
-		else {
-			$formIsValid = false;
-			addToMessages("Category cannot be empty");
-		}
-		if (isset($_POST["company"]) && $_POST["company"] != "")
-			$itemToAdd["company"] = $_POST["company"];
-		else {
-			$formIsValid = false;
-			addToMessages("Company cannot be empty");
-		}
-		if (isset($_POST["year"]) && $_POST["year"] != "")
-			$itemToAdd["year"] = $_POST["year"];
-		else {
-			$formIsValid = false;
-			addToMessages("Year cannot be empty");
-		}
-		if (isset($_POST["price"]) && $_POST["price"] != "")
-			$itemToAdd["price"] = $_POST["price"];
-		else {
-			$formIsValid = false;
-			addToMessages("Price cannot be empty");
-		}
-		if (isset($_POST["stock"]) && $_POST["stock"] != "")
-			$itemToAdd["stock"] = $_POST["stock"];
-		else {
-			$formIsValid = false;
-			addToMessages("Stock cannot be empty");
+			addToMessages("Quantity cannot be empty");
 		}
 	}
 
