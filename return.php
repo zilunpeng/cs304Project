@@ -733,7 +733,7 @@ Hence, each page is broken down into three parts:
 			$subtotal += $items[$x]["price"] * $items[$x]["quantitytoreturn"];
 		}
 		
-		return $subtotal;
+		return number_format($subtotal, 2);
 		
 	}
 	
