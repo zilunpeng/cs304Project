@@ -27,7 +27,7 @@ Hence, each page is broken down into three parts:
 		if (isset($_GET["exactdate"])) {
 			global $items, $con;
 			$items = getSalesReport($con, $_GET["exactdate"], "exact");
-		} else if (isset($_GET["startdate"]) && isset($_GET["enddate")) {
+		} else if (isset($_GET["startdate"]) && isset($_GET["enddate"])) {
 			// do ranged date stuff
 		}
 	}
