@@ -8,10 +8,10 @@ use ams;
 drop table if exists item;
 create table item
 	(upc char(3) not null,
-	title varchar(25),
+	title varchar(20),
 	type varchar(20),
 	category varchar(20),
-	company varchar(25),
+	company varchar(20),
 	year integer,
 	price float,
 	stock integer,
@@ -22,7 +22,7 @@ create table item
 drop table if exists leadSinger;
 create table leadSinger
 	(upc char(3) not null,
-	sname varchar(40) not null,
+	sname varchar(20) not null,
 	primary key (upc, sname));
 
 
@@ -96,7 +96,7 @@ values('004', 'cd4', 'cd', 'country', 'Wolters Kluwer', 2011, 10.5, 8
  );
  
 insert into item 
-values('005', 'cd5', 'cd', 'classical', 'Random House	', 2013, 19, 7
+values('005', 'cd5', 'cd', 'classical', 'Random House', 2013, 19, 7
  );
  
 insert into item 
