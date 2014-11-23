@@ -92,7 +92,7 @@ values('003', 'cd3', 'cd', 'rap', 'Wolters Kluwer', 2011, 10.5, 8
  );
  
 insert into item 
-values('004', 'cd4ggggggggggggggggggggggggggggggggggggggggggggggggggg', 'cd', 'country', 'Wolters Kluwergggggggggggggggggggggggggggggggggggggggggggggggggggggg', 2011, 10.5, 8
+values('004', 'cd4', 'cd', 'country', 'Wolters Kluwer', 2011, 10.5, 8
  );
  
 insert into item 
