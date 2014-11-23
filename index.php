@@ -146,7 +146,7 @@ Hence, each page is broken down into three parts:
 			
 			<!-- Heading -->
 			<div style="width:100%; text-align:center; padding-top:50px; padding-bottom:30px;">
-				<h2 style="font-size: 1.4em;"> WELCOME!  PLEASE SELECT A MENU OPTION </h2>
+				<h2 style="font-size: 1.4em;"> WELCOME! <br /> <br />  PLEASE SELECT A MENU OPTION </h2>
 			</div>
 			
 			
