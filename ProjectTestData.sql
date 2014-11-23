@@ -16,7 +16,8 @@ create table item
 	price float,
 	stock integer,
     primary key (upc),
-    check (type = 'rock' or type = 'pop' or type = 'rap' or type = 'country' or type = 'country' or type = 'classical' or type = 'new age' or type = 'instrumental'));
+    check (type = 'cd' or type = 'dvd'),
+    check (category = 'rock' or category = 'pop' or category = 'rap' or category = 'country' or category = 'country' or category = 'classical' or category = 'new age' or category = 'instrumental'));
 
  
 drop table if exists leadSinger;
