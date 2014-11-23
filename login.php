@@ -43,11 +43,12 @@ Hence, each page is broken down into three parts:
 	/**************************************************************
 	Perform requested operations from HTML form here
 	**************************************************************/
+	$successfulLogin = FALSE;
 	if ($_SERVER["REQUEST_METHOD"] == "POST") {
 		
 		// OPERATION: User pressed the login button
 		if (isset($_POST["login"])) {
-			login($_POST["username"], $_POST["password"], $con);
+			$successfulLogin = login($_POST["username"], $_POST["password"], $con);
 		}
 		
 	}
@@ -156,16 +157,12 @@ Hence, each page is broken down into three parts:
 		
 		
 		
-			<!-- Heading -->
-			<div style="width:100%; text-align:center; padding-top:50px; padding-bottom:30px;">
-				LOGIN
-			</div>
-			
-			
-			
 			<!-- Login Form -->
 			<?php
-				createLoginForm();
+				if ($successfulLogin == TRUE)
+					printSuccessfulLogin();
+				else
+					createLoginForm();
 			?>
 			
 
@@ -191,6 +188,9 @@ Hence, each page is broken down into three parts:
 	**************************************************************************/
 	function createLoginForm() {
 		echo ('
+			<div style="width:100%; text-align:center; padding-top:50px; padding-bottom:30px;">
+				<h2 style="font-size: 1.4em;"> LOGIN </h2>
+			</div>
 			<form action="login.php" method="post">
 				<table style="margin-left:auto; margin-right:auto; text-align:left;">
 					<tr>
@@ -202,10 +202,20 @@ Hence, each page is broken down into three parts:
 						<td> <input type="password" name="password"> </td>
 					</tr>
 					<tr>
-						<td> <input type="submit" name="login" value="login"> </td>
+						<td> <input type="submit" name="login" value="Login"> </td>
 					</tr>
 				</table>		
 			</form>
+		');
+	}
+	
+	
+	
+	function printSuccessfulLogin() {
+		echo('
+			<div style="width:100%; text-align:center; padding-top:50px; padding-bottom:30px;">
+				<h2 style="font-size: 1.4em;"> LOGIN SUCCESSFUL </h2>
+			</div>
 		');
 	}
 	
@@ -251,19 +261,19 @@ Hence, each page is broken down into three parts:
 	
 		// ERROR: no database connection
 		if ($con == null) {
-			return;
+			return FALSE;
 		}		
 	
 		// ERROR: user left the username field blank
 		if (empty($username)) {
 			addToMessages("You must enter a username");
-			return;
+			return FALSE;
 		}
 		
 		// ERROR: user left the password field blank
 		if (empty($password)) {
 			addToMessages("You must enter a password");
-			return;
+			return FALSE;
 		}
 		
 		$customer = queryCustomer($con, $username);
@@ -271,18 +281,19 @@ Hence, each page is broken down into three parts:
 		// ERROR: user name was not found
 		if ($customer == null) {
 			addToMessages("Invalid username/password combination");
-			return;
+			return FALSE;
 		}
 
 		// ERROR: incorrect password
 		if ($customer["password"] != $password) {
 			addToMessages("Invalid username/password combination");
-			return;
+			return FALSE;
 		}
 		
 		// SUCCESS
-		addToMessages("Login Successful");
 		$_SESSION["username"] = $username;
+		
+		return TRUE;
 	}
 	
 	

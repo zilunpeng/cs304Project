@@ -62,7 +62,6 @@
 }
 
 
-
 /*
 	Sidebar Styles
 */
@@ -136,6 +135,21 @@ time, mark, audio, video {
 html {
   box-sizing: border-box;
 }
+
 *, *:before, *:after {
   box-sizing: inherit;
+
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+
+table td {
+    padding: 6px;
+	white-space: nowrap;
+}
+
+input, select, button {
+	outline: 1px solid black;	
+	padding:2px;
 }

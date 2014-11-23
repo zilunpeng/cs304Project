@@ -8,7 +8,7 @@ use ams;
 drop table if exists item;
 create table item
 	(upc char(3) not null,
-	title varchar(40),
+	title varchar(20),
 	type varchar(20),
 	category varchar(20),
 	company varchar(20),
@@ -22,7 +22,7 @@ create table item
 drop table if exists leadSinger;
 create table leadSinger
 	(upc char(3) not null,
-	sname varchar(40) not null,
+	sname varchar(20) not null,
 	primary key (upc, sname));
 
 
@@ -38,7 +38,7 @@ create table purchase
 	(receiptId int(10) not null auto_increment,
 	purchaseDate date,
 	cid varchar(40),
-	cardNumber int(16),
+	cardNumber bigint(16),
 	expiryDate date,
 	expectedDate date,
 	deliveredDate date,
@@ -48,14 +48,14 @@ create table purchase
 drop table if exists purchaseItem;
 create table purchaseItem 
 	(receiptId int(10)  not null,
-	upc char(37) not null,
+	upc char(3) not null,
 	quantity int,
 	primary key(receiptId, upc));
  
  
 drop table if exists customer;
 create table customer
-	(cid varchar(3) not null,
+	(cid varchar(18) not null,
 	name varchar(40),
 	password varchar(40),
 	phone varchar(12),
@@ -75,7 +75,7 @@ create table returns
 drop table if exists returnItem; 
 create table returnItem
 	(retID int(10) not null,
-	upc char(37) not null,
+	upc char(3) not null,
 	quantity int,
 	primary key(retID, upc));
  
@@ -96,7 +96,7 @@ values('004', 'cd4', 'cd', 'country', 'Wolters Kluwer', 2011, 10.5, 8
  );
  
 insert into item 
-values('005', 'cd5', 'cd', 'classical', 'Random House	', 2013, 19, 7
+values('005', 'cd5', 'cd', 'classical', 'Random House', 2013, 19, 7
  );
  
 insert into item 
