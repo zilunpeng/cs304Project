@@ -202,7 +202,7 @@ Hence, each page is broken down into three parts:
 						<td> <input type="password" name="password"> </td>
 					</tr>
 					<tr>
-						<td> <input type="submit" name="login" value="login"> </td>
+						<td> <input type="submit" name="login" value="Login"> </td>
 					</tr>
 				</table>		
 			</form>

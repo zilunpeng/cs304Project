@@ -321,7 +321,7 @@ Hence, each page is broken down into three parts:
 						<td> <input type="text" name="creditcardexpiry"> </td>
 					</tr>
 					<tr>
-						<td> <input type="submit" name="purchase" value="purchase"> </td>
+						<td> <input type="submit" name="purchase" value="Purchase"> </td>
 					</tr>
 				</form>
 			</table>

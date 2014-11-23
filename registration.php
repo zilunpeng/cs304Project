@@ -209,7 +209,7 @@ Hence, each page is broken down into three parts:
 						<td> <input type="text" name="phone" value="' . $_SESSION["phone"] . '"> </td>
 						<td> ADDRESS: </td>
 						<td> <input type="text" name="address" value="' . $_SESSION["address"] . '"> </td>
-						<td> <input type="submit" name="register" value="register"> </td>
+						<td> <input type="submit" name="register" value="Register"> </td>
 					</tr>
 				</table>		
 			</form>

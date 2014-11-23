@@ -135,4 +135,5 @@ table td {
 
 input, select, button {
 	outline: 1px solid black;	
+	padding:2px;
 }
