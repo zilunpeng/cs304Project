@@ -317,7 +317,7 @@ Hence, each page is broken down into three parts:
 						<td style="width:40%"> </td>
 					</tr>
 					<tr>
-						<td> Credit Card Expiry: </td>
+						<td> Card Expiry (mm/yy): </td>
 						<td> <input type="text" name="creditcardexpiry"> </td>
 					</tr>
 					<tr>
