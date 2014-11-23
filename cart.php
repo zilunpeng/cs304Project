@@ -368,7 +368,7 @@ Hence, each page is broken down into three parts:
 
 		echo ('
 			<form action="cart.php" method="post">
-				<table style="width:100%; text-align:center;">
+				<table style="width:100%; text-align:center; border-bottom: 1px solid black;">
 					<tr>
 						<td> UPC </td>
 						<td> TITLE </td>
