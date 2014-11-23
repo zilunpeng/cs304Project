@@ -122,28 +122,6 @@
 	
 	
 	/**************************************************************************
-		Updates an item.
-		
-		@param $item
-			An array containing the attributes of the item to update.
-			Should be of the form:
-				array("upc", "title", "type", "category",
-					  "company", "year", "price", "stock")
-		
-		@param $con
-			The connection to the database
-	**************************************************************************/
-	function updateItem($con, $item) {
-
-		$update = $con->prepare('UPDATE item upc=?, title=?, type=?, category=?, company=?, year=?, price=?, stock=? WHERE upc=?');
-		$update->bind_param("isi", $item["upc"], $item["title"], $item["type"], $item["category"], $item["company"], $item["year"], $item["price"], $item["stock"], $item["upc"]);
-		$update->execute();
-		
-	}
-	
-	
-	
-	/**************************************************************************
 		Queries the database for the customer with the given cid.
 		
 		If the customer is found, the function returns an array of the form
