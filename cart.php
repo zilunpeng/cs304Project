@@ -352,7 +352,7 @@ Hence, each page is broken down into three parts:
 						<td> <input type="text" name="leadsinger" value="' . $_SESSION["leadsinger"] . '"> </td>
 						<td> QUANTITY: </td>
 						<td> <input type="text" name="quantity" value="' . $_SESSION["quantity"] . '"> </td>
-						<td> <input type="submit" name="search" value="search"> </td>
+						<td> <input type="submit" name="search" value="Search"> </td>
 					</tr>
 				</table>		
 			</form>
