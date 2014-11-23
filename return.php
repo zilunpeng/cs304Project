@@ -273,7 +273,7 @@ Hence, each page is broken down into three parts:
 					<tr>
 						<td> RECEIPT ID: </td>
 						<td> <input type="text" name="receiptId" value="' . $_SESSION["receiptId"] . '"> </td>
-						<td> <input type="submit" name="checkreceipt" value="checkreceipt"> </td>
+						<td> <input type="submit" name="checkreceipt" value="Verify Receipt"> </td>
 					</tr>
 				</table>		
 			</form>
