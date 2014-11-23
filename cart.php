@@ -377,6 +377,7 @@ Hence, each page is broken down into three parts:
 						<td> COMPANY </td>
 						<td> YEAR </td>
 						<td> PRICE </td>
+						<td> STOCK </td>
 						<td> LEAD SINGER </td>
 						<td> </td>
 					</tr>');
@@ -392,6 +393,7 @@ Hence, each page is broken down into three parts:
 				echo ("<td> " . $item["company"] . "</td>\n");
 				echo ("<td> " . $item["year"] . "</td>\n");
 				echo ("<td> " . $item["price"] . "</td>\n");
+				echo ("<td> " . $item["stock"] . "</td>\n");
 				echo ("<td> " . $item["leadsinger"] . "</td>\n");
 			if ($item["stock"] < $_SESSION["quantity"])
 				echo ('<td> <button onclick="return confirmQuantity(' . $item["stock"] . ')" name="addtocart" type="submit" value="' . $item["upc"] . '#' . $item["stock"] . '"> Add to Cart </button> </td>' . "\n");
