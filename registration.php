@@ -200,15 +200,15 @@ Hence, each page is broken down into three parts:
 				<table style="margin-left:auto; margin-right:auto; text-align:left; margin-bottom:10px">
 					<tr>
 						<td> USER ID: </td>
-						<td> <input type="text" name="cid" value="' . $_SESSION["cid"] . '"> </td>
+						<td> <input type="text" maxlength="18" name="cid" value="' . $_SESSION["cid"] . '"> </td>
 						<td> NAME: </td>
-						<td> <input type="text" name="name" value="' . $_SESSION["name"] . '"> </td>
+						<td> <input type="text" maxlength="40" name="name" value="' . $_SESSION["name"] . '"> </td>
 						<td> PASSWORD: </td>
-						<td> <input type="password" name="password" value="' . $_SESSION["password"] . '"> </td>
+						<td> <input type="password" maxlength="40" name="password" value="' . $_SESSION["password"] . '"> </td>
 						<td> PHONE NUMBER: </td>
-						<td> <input type="text" name="phone" value="' . $_SESSION["phone"] . '"> </td>
+						<td> <input type="text" maxlength="12" name="phone" value="' . $_SESSION["phone"] . '"> </td>
 						<td> ADDRESS: </td>
-						<td> <input type="text" name="address" value="' . $_SESSION["address"] . '"> </td>
+						<td> <input type="text" maxlength="40" name="address" value="' . $_SESSION["address"] . '"> </td>
 						<td> <input type="submit" name="register" value="Register"> </td>
 					</tr>
 				</table>		

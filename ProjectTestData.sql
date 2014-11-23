@@ -55,7 +55,7 @@ create table purchaseItem
  
 drop table if exists customer;
 create table customer
-	(cid varchar(3) not null,
+	(cid varchar(18) not null,
 	name varchar(40),
 	password varchar(40),
 	phone varchar(12),
