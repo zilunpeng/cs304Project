@@ -129,7 +129,7 @@ Hence, each page is broken down into three parts:
 	
 	
 	<!-- Page title -->
-	<title> Search </title>
+	<title> Shopping Cart </title>
 
 	
 	
@@ -604,8 +604,6 @@ Hence, each page is broken down into three parts:
 		removefromcart($upc);
 		
 		array_push($_SESSION["cart"], array("upc"=>$upc, "quantity"=>$quantity));
-						
-		addToMessages ("Add To Cart Completed Successfully");
 		
 	}
 
