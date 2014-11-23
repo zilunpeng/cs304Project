@@ -48,7 +48,7 @@ create table purchase
 drop table if exists purchaseItem;
 create table purchaseItem 
 	(receiptId int(10)  not null,
-	upc char(37) not null,
+	upc char(3) not null,
 	quantity int,
 	primary key(receiptId, upc));
  
@@ -75,7 +75,7 @@ create table returns
 drop table if exists returnItem; 
 create table returnItem
 	(retID int(10) not null,
-	upc char(37) not null,
+	upc char(3) not null,
 	quantity int,
 	primary key(retID, upc));
  
