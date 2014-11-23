@@ -105,18 +105,12 @@ Hence, each page is broken down into three parts:
 	
 	<!-- Additional JavaScript functions -->
 	<script>
-		function confirmQuantity(stock) {
-			'use strict';
-			if (confirm("There are only " + stock + " in stock.\nDo you want to accept this quantity?"))
-				return true;
-			return false;
-		}
 	</script>
 
 	
 	
 	<!-- Page title -->
-	<title> Search </title>
+	<title> Register </title>
 
 	
 	

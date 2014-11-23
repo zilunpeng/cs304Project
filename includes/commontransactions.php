@@ -51,7 +51,7 @@
 		$items = array();
 	
 		// The array containing the results of the query
-		$result = array("upc"=>array(), "title"=>array(), "type"=>array(), "category"=>array(), "company"=>array(), "year"=>array(), "price"=>array(), "stock"=>array()); 
+		$result = array(); 
 		
 		// The prepared statement
 		$query = $con->prepare("SELECT upc, title, type, category, company, year, price, stock FROM item WHERE upc=?");
@@ -88,7 +88,7 @@
 								"category"=>$result["category"],
 								"company"=>$result["company"],
 								"year"=>$result["year"],
-								"price"=>round($result["price"], 2),
+								"price"=>number_format($result["price"], 2),
 								"stock"=>$result["stock"]
 							)
 					)
@@ -168,7 +168,7 @@
 		$customers = array();
 	
 		// The array containing the results of the query
-		$result = array("cid"=>array(), "name"=>array(), "password"=>array(), "phone"=>array(), "address"=>array()); 
+		$result = array();
 		
 		// The prepared statement
 		$query = $con->prepare("SELECT cid, name, password, phone, address FROM customer WHERE cid=?");
@@ -238,10 +238,13 @@
 	
 	/**************************************************************************
 		Queries the database for the purchase with the given receiptId.
+		NOTE: An extra column is added for convenience: daysSincePurchase.
+			  It stores the number of days since the purchase date.
 		
 		If the purchase is found, the function returns an array of the form
 				array("receiptId", "purchaseDate", "cid", "cardNumber",
-					  "expiryDate", "expectedDate", "deliveredDate")
+					  "expiryDate", "expectedDate", "deliveredDate",
+					  "daysSincePurchase")
 					  
 		If the purchase is not found, null is returned
 		
@@ -267,10 +270,14 @@
 				array("receiptId", "result")
 		where "result" indexes an array of the form 
 				array("receiptId", "purchaseDate", "cid", "cardNumber",
-					  "expiryDate", "expectedDate", "deliveredDate")
+					  "expiryDate", "expectedDate", "deliveredDate",
+					  "daysSincePurchase")
 					  
 		If an particular item is not found, then the "result" is null.
 		
+		NOTE: An extra column is added for convenience: daysSincePurchase.
+			  It stores the number of days since the purchase date.
+			  
 		No changes are made to the database.
 
 		@param $receiptIds
@@ -285,12 +292,12 @@
 		$purchases = array();
 	
 		// The array containing the results of the query
-		$result = array("receiptId"=>array(), "purchaseDate"=>array(), "cid"=>array(), "cardNumber"=>array(), "expiryDate"=>array(), "expectedDate"=>array(), "deliveredDate"=>array());
+		$result = array();
 		
 		// The prepared statement
-		$query = $con->prepare('SELECT receiptId, purchaseDate, cid, cardNumber, expiryDate, expectedDate, deliveredDate FROM purchase WHERE receiptId=?');
+		$query = $con->prepare('SELECT receiptId, purchaseDate, cid, cardNumber, expiryDate, expectedDate, deliveredDate, DATEDIFF(CURDATE(), purchaseDate) AS daysSincePurchase FROM purchase WHERE receiptId=?');
 		$query->bind_param("i", $receiptId);
-		$query->bind_result($result["receiptId"], $result["purchaseDate"], $result["cid"], $result["cardNumber"], $result["expiryDate"], $result["expectedDate"], $result["deliveredDate"]);
+		$query->bind_result($result["receiptId"], $result["purchaseDate"], $result["cid"], $result["cardNumber"], $result["expiryDate"], $result["expectedDate"], $result["deliveredDate"], $result["daysSincePurchase"]);
 		
 		// Executing the query statement for every receiptId in the given array
 		for($x = 0; $x < count($receiptIds); $x++) {
@@ -322,7 +329,8 @@
 								"cardNumber"=>$result["cardNumber"],
 								"expiryDate"=>$result["expiryDate"],
 								"expectedDate"=>$result["expectedDate"],
-								"deliveredDate"=>$result["deliveredDate"]
+								"deliveredDate"=>$result["deliveredDate"],
+								"daysSincePurchase"=>$result["daysSincePurchase"]
 							)
 					)
 				);
@@ -368,6 +376,7 @@
 		// The delivery date
 		$con->query('SET @deliveryDate = null');
 		
+		
 		// The insert statement for the new purchase entity
 		$insert = $con->prepare('INSERT INTO purchase (purchaseDate, cid, cardNumber, expiryDate, expectedDate, deliveredDate) VALUES (@purchaseDate, ?, ?, ?, @expectedDate, @deliveryDate)');
 		$insert->bind_param("sis", $cid, $creditcardnumber, $creditcardexpiry);
@@ -411,21 +420,24 @@
 		$query->bind_result($result["receiptId"], $result["upc"], $result["quantity"]);
 
 		$query->execute();
-		$query->fetch();
-			
-		// If the current receiptId is not found...
-		if (count($result["receiptId"]) == 0) {
-			return array();
-		}
+		
+		while ($query->fetch()) {
+				
+			// If the current receiptId is not found...
+			if (!isset($result["receiptId"])) {
+				return array();
+			}
 
-		// Otherwise, purchaseItem information is retrieved.
-		array_push($purchaseItems,
-			array(
-				"receiptId"=>$receiptId,
-				"upc"=>$result["upc"],
-				"quantity"=>$result["quantity"]
-			)
-		);
+			// Otherwise, purchaseItem information is retrieved.
+			array_push($purchaseItems,
+				array(
+					"receiptId"=>$result["receiptId"],
+					"upc"=>$result["upc"],
+					"quantity"=>$result["quantity"]
+				)
+			);
+		
+		}
 		
 		return $purchaseItems;
 		
@@ -510,7 +522,7 @@
 		$returns = array();
 	
 		// The array containing the results of the query
-		$result = array("retId"=>array(), "returnDate"=>array(), "receiptId"=>array());
+		$result = array();
 		
 		// The prepared statement
 		$query = $con->prepare('SELECT retId, returnDate, receiptId FROM returns WHERE retId=?');
@@ -550,6 +562,61 @@
 			}
 		}
 		
+		return $returns;
+		
+	}
+	
+	
+	
+	/**************************************************************************
+		Queries the database for returns associated with the given receiptId.
+		
+		Returns an array where each entry has the form
+				array("retId", "date", "receiptId")
+					  
+		If no items are found, then an empty array is returned.
+		
+		No changes are made to the database.
+
+		@param $receiptId
+			The associated receiptId
+		
+		@param $con
+			The connection to the database
+	**************************************************************************/
+	function queryReturnsAssociatedWithReceiptId($con, $receiptId) {
+	
+		// The array of returns to return
+		$returns = array();
+	
+		// The array containing the results of the query
+		$result = array("retId"=>array(), "returnDate"=>array(), "receiptId"=>array());
+		
+		// The prepared statement
+		$query = $con->prepare('SELECT retId, returnDate, receiptId FROM returns WHERE receiptId=?');
+		$query->bind_param("i", $receiptId);
+		$query->bind_result($result["retId"], $result["returnDate"], $result["receiptId"]);
+
+		$query->execute();
+		
+		while ($query->fetch()) {
+					
+			// If the current retId is not found...
+			if (count($result["retId"]) == 0) {
+				return array();
+			}
+
+			// Otherwise, returnItem information is retrieved.
+			array_push($returns,
+				array(
+					"retId"=>$result["retId"],
+					"returnDate"=>$result["returnDate"],
+					"receiptId"=>$result["receiptId"]
+				)
+			);
+			
+		}
+				
 		return $returns;
 		
 	}
@@ -610,22 +677,77 @@
 		$query->bind_result($result["retId"], $result["upc"], $result["quantity"]);
 
 		$query->execute();
-		$query->fetch();
-			
-		// If the current retId is not found...
-		if (count($result["retId"]) == 0) {
-			return array();
-		}
-
-		// Otherwise, returnItem information is retrieved.
-		array_push($returnItems,
-			array(
-				"retId"=>$retId,
-				"upc"=>$result["upc"],
-				"quantity"=>$result["quantity"]
-			)
-		);
 		
+		while ($query->fetch()) {
+					
+			// If the current retId is not found...
+			if (count($result["retId"]) == 0) {
+				return array();
+			}
+
+			// Otherwise, returnItem information is retrieved.
+			array_push($returnItems,
+				array(
+					"retId"=>$result["retId"],
+					"upc"=>$result["upc"],
+					"quantity"=>$result["quantity"]
+				)
+			);
+			
+		}
+		
+		return $returnItems;
+		
+	}
+	
+	
+	
+	/**************************************************************************
+		Queries the database for the ReturnItems with the given array of
+		retIds.
+		
+		If ReturnItems are found, the function returns an array where every
+		element is an array of the form
+				array("retId", "upc", "quantity")
+					  
+		If ReturnItems are not found, an empty array is returned.
+		
+		If an returnitem exists in two different returns, then their quantities
+		are combined into one returnitem.
+		
+		No changes are made to the database.
+
+		@param $retIds
+			The array of retIds to query
+		
+		@param $con
+			The connection to the database
+	**************************************************************************/
+	function queryReturnItemsForMultipleReturns($con, $retIds) {
+	
+		// The array of returnItems to return
+		$returnItems = array();
+		
+		for($x = 0; $x < count($retIds); $x++) {
+			$retId = $retIds[$x];
+			$returnItemsForThisRetId = queryReturnItems($con, $retId);
+			for ($y = 0; $y < count($returnItemsForThisRetId); $y++) {
+				$addReturnItem = TRUE;
+				for ($z = 0; $z < count($returnItems) && $addReturnItem == TRUE; $z++) {
+					if ($returnItems[$z]["upc"] == $returnItemsForThisRetId[$y]["upc"]) {
+						$returnItems[$z]["quantity"] += $returnItemsForThisRetId[$y]["quantity"];
+						$addReturnItem = FALSE;
+					}
+				}
+				if ($addReturnItem == TRUE) {
+					$returnItemsIndex = count($returnItems);
+					$returnItems[$returnItemsIndex]["retId"]= $returnItemsForThisRetId[$y]["retId"];
+					$returnItems[$returnItemsIndex]["upc"] = $returnItemsForThisRetId[$y]["upc"];
+					$returnItems[$returnItemsIndex]["quantity"] = $returnItemsForThisRetId[$y]["quantity"];
+				}
+			}
+		}
+	
 		return $returnItems;
 		
 	}

@@ -38,7 +38,7 @@ create table purchase
 	(receiptId int(10) not null auto_increment,
 	purchaseDate date,
 	cid varchar(40),
-	cardNumber int(16),
+	cardNumber bigint(16),
 	expiryDate date,
 	expectedDate date,
 	deliveredDate date,

@@ -11,8 +11,7 @@
 					if (isset($_SESSION["username"]) && $_SESSION["username"] != NULL) {
 						echo ('
 							<li><a href="logout.php"> Logout </a> </li>
-							<li><a href="search.php"> Search for Items </a> </li>
-							<li><a href="cart.php"> View Cart </a> </li>
+							<li><a href="cart.php"> Your Shopping Cart </a> </li>
 							<li><a href="checkout.php"> Checkout </a> </li>
 						');
 					}
@@ -20,6 +19,8 @@
 						echo ('
 							<li><a href="login.php"> Login </a></li>
 							<li><a href="registration.php"> Create Account </a></li>
+							<li><a href="cart.php"> Your Shopping Cart </a> </li>
+							<li><a href="checkout.php"> Checkout </a> </li>
 						');
 					}
 				?>

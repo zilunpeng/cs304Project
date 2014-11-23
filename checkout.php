@@ -174,12 +174,30 @@ Hence, each page is broken down into three parts:
 			
 			
 			
-			<div style="width:800px;margin-left:auto; margin-right:auto; text-align:left;">
-				<?php
-					createItemList($items, array_column($_SESSION["cart"], "quantity"));
-					createPriceTable($subtotal, $gst, $pst, $total);
-					createPurchaseForm();
-				?>
+			<div style="width:600px; margin-left:auto; margin-right:auto; text-align:left;">
+				<div style="width:100%; text-align:center; padding-top:20px;">
+				
+					<?php
+						createItemList($items, array_column($_SESSION["cart"], "quantity"));
+					?>
+				
+				</div>
+				
+				<div style="width:100%; text-align:center; padding-top:20px;">
+				
+					<?php
+						createPriceTable($subtotal, $gst, $pst, $total);
+					?>
+				
+				</div>
+				
+				<div style="width:100%; text-align:center; padding-top:20px;">
+				
+					<?php
+						createPurchaseForm();
+					?>
+				
+				</div>
 			</div>
 			
 
@@ -206,12 +224,12 @@ Hence, each page is broken down into three parts:
 	function createItemList($items, $quantities) {
 		
 		echo ('
-				<table style="width:100%; text-align:left; border-bottom: 1px solid black; margin-bottom:10px;">
+				<table style="width:100%; text-align:left">
 					<tr>
-						<td style="font-size: 1.25em;"> UPC </td>
-						<td style="font-size: 1.25em;"> TITLE </td>
-						<td style="font-size: 1.25em;"> PRICE </td>
-						<td style="font-size: 1.25em;"> QUANTITY </td>
+						<td> UPC </td>
+						<td> TITLE </td>
+						<td> PRICE </td>
+						<td> QUANTITY </td>
 					</tr>
 		');
 		for ($x = 0; $x < count($items); $x++) {
@@ -246,38 +264,42 @@ Hence, each page is broken down into three parts:
 	
 	function createPriceTable($subtotal, $gst, $pst, $total) {
 		echo ('
-			<table style="width:100%; text-align:left; margin-bottom:10px; margin-top:10px;">
+			<table style="width:100%; text-align:left; border-top: 1px solid black; border-bottom: 1px solid black;">
 				<tr>
-					<td style="width:100px;">
+					<td style="width:25%">
 						SUBTOTAL:
 					</td>
-					<td>
+					<td style="width:25%">
 						' . $subtotal . '
 					</td>
+					<td style="width:50%"> </td>
 				</tr>
 				<tr>
-					<td>
+					<td style="width:25%">
 						GST:
 					</td>
-					<td>
+					<td style="width:25%">
 						' . $gst . '
 					</td>
+					<td style="width:50%"> </td>
 				</tr>
 				<tr>
-					<td>
+					<td style="width:25%">
 						PST:
 					</td>
-					<td>
+					<td style="width:25%">
 						' . $pst . '
 					</td>
+					<td style="width:50%"> </td>
 				</tr>
 				<tr>
-					<td>
+					<td style="width:25%">
 						TOTAL:
 					</td>
-					<td>
+					<td style="width:25%">
 						' . $total . '
 					</td>
+					<td style="width:50%"> </td>
 				</tr>
 			</table>
 		');
@@ -287,12 +309,12 @@ Hence, each page is broken down into three parts:
 	
 	function createPurchaseForm() {
 		echo ('
-			<table style="width:100%;text-align:left; border-top: 1px solid black;">
+			<table style="width:100%;text-align:left;">
 				<form action="checkout.php" method="post">
 					<tr>
 						<td style="width:140px;"> Credit Card Number: </td>
 						<td style="width:100px; padding-right:5px;"> <input type="text" name="creditcardnumber"> </td>
-						<td></td>
+						<td style="width:40%"> </td>
 					</tr>
 					<tr>
 						<td> Credit Card Expiry: </td>
@@ -439,11 +461,15 @@ Hence, each page is broken down into three parts:
 			return;
 		}
 		
+		// Get SQL-compatible date string for the credit card expiry
+		$expiryDate = getFormattedExpiryDate($creditcardexpiry);
+		
 		// ERROR: The credit card expiry is not correct format
-		if (!filter_var($creditcardexpiry, FILTER_VALIDATE_REGEXP, array("options"=>array("regexp"=>'/^[0-9][0-9]\/[0-9][0-9]$/')))) {
+		if ($expiryDate == NULL) {
 			addToMessages("Invalid credit card expiry");
 			return;
 		}
+
 		
 		
 		// Must be able to rollback if an error occurs
@@ -451,8 +477,9 @@ Hence, each page is broken down into three parts:
 		$con->autocommit(FALSE);
 		
 		
+		
 		// Create the new purchase
-		$receiptId = insertIntoPurchase($con, $_SESSION["username"], $creditcardnumber, $creditcardexpiry);
+		$receiptId = insertIntoPurchase($con, $_SESSION["username"], $creditcardnumber, $expiryDate);
 		
 		
 		// Get the newly created purchase
@@ -477,7 +504,9 @@ Hence, each page is broken down into three parts:
 		
 		
 		// Print success message
-		addToMessages ("Purchase Completed Successfully - Estimated Delivery Date: " . $purchase["expectedDate"]);
+		addToMessages ("Purchase Completed Successfully!");
+		addToMessages ("ReceiptID: " . $purchase["receiptId"]);
+		addToMessages ("Estimated Delivery Date: " . $purchase["expectedDate"]);
 		
 	}
 	
@@ -512,7 +541,7 @@ Hence, each page is broken down into three parts:
 		if ($subtotal == "")
 			return "";
 			
-		return round($subtotal * 0.05, 2);
+		return number_format($subtotal * 0.05, 2);
 		
 	}
 	
@@ -526,7 +555,7 @@ Hence, each page is broken down into three parts:
 		if ($subtotal == "")
 			return "";
 			
-		return round($subtotal * 0.07, 2);
+		return number_format($subtotal * 0.07, 2);
 		
 	}
 	
@@ -540,7 +569,7 @@ Hence, each page is broken down into three parts:
 		if ($subtotal == "")
 			return "";
 			
-		return round($subtotal + $gst + $pst, 2);
+		return number_format($subtotal + $gst + $pst, 2);
 		
 	}
 	

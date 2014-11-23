@@ -34,6 +34,13 @@ Hence, each page is broken down into three parts:
 
 
 	/**************************************************************
+	Configure SESSION variables
+	**************************************************************/
+	configureSESSIONVariables();
+
+
+
+	/**************************************************************
 	Connect to database
 	**************************************************************/
 	$con = connectToDatabase();
@@ -55,6 +62,11 @@ Hence, each page is broken down into three parts:
 			addtoreturns($_POST["addtoreturns"], $con);
 		}
 		
+		// OPERATION: User pressed the "removefromreturns" button
+		if (isset($_POST["removefromreturns"])) {
+			removefromreturns($_POST["removefromreturns"], $con);
+		}
+		
 		// OPERATION: User pressed the "return" button
 		if (isset($_POST["return"])) {
 			returnItems($con);
@@ -65,11 +77,6 @@ Hence, each page is broken down into three parts:
 			unsetSESSIONVariables();
 		}
 		
-	}
-	// If this is the first time the page is loaded (i.e. user has
-	// not yet submitted a form), then clear out the saved form data.
-	if ($_SERVER["REQUEST_METHOD"] != "POST") {
-		unsetSESSIONVariables();
 	}
 	
 	
@@ -127,6 +134,10 @@ Hence, each page is broken down into three parts:
 	<script>
 		function confirmQuantity(enteredQuantity, maxQuantity) {
 			'use strict';
+			if (maxQuantity == 0) {
+				alert("All of these items have already been returned");
+				return false;
+			}
 			if (enteredQuantity <= maxQuantity)
 				return true;
 			if (confirm("The maximum quantity you can return for this item is " + maxQuantity + ".\nDo you want to accept this quantity?"))
@@ -192,19 +203,19 @@ Hence, each page is broken down into three parts:
 		
 			<!-- Heading -->
 			<div style=" width:100%; text-align:center; padding-top:50px; padding-bottom:30px;">
-				<h2 style="font-size: 1.4em;"> RETURN </h2>
+				<h2 style="font-size: 1.4em;"> RETURN ITEMS </h2>
 			</div>
 			
 			
 			
-			<div style="width:800px;margin-left:auto; margin-right:auto; text-align:left;">
+			<div style="width:1000px;margin-left:auto; margin-right:auto; text-align:left;">
 				<?php
 					createReceiptForm();
 				?>
 				
 				
 				<div style="width:100%; text-align:center; padding-top:50px; padding-bottom:30px;">
-					<h2 style="font-size: 1.4em;"> ITEMS PURCHASED </h2>
+					<h2 style="font-size: 1.1em;"> ITEMS PURCHASED </h2>
 				</div>
 			
 			
@@ -214,12 +225,21 @@ Hence, each page is broken down into three parts:
 				
 				
 				<div style="width:100%; text-align:center; padding-top:50px; padding-bottom:30px;">
-					<h2 style="font-size: 1.4em;"> ITEMS TO RETURN </h2>
+					<h2 style="font-size: 1.1em;"> ITEMS TO RETURN </h2>
 				</div>
 			
 			
 				<?php
 					createReturnItemsTable($returnItems);
+				?>
+				
+				
+				<div style="width:100%; text-align:center; padding-top:50px; padding-bottom:30px;">
+					<h2 style="font-size: 1.1em;"> REFUND AMOUNT </h2>
+				</div>
+
+
+				<?php
 					createPriceTable($subtotal, $gst, $pst, $total);
 					createReturnCancelButtons();
 				?>
@@ -271,12 +291,13 @@ Hence, each page is broken down into three parts:
 			<form action="return.php" method="post">
 				<table style="width:100%; text-align:left; border-bottom: 1px solid black; margin-bottom:10px;">
 					<tr>
-						<td style="font-size: 1.25em;"> UPC </td>
-						<td style="font-size: 1.25em;"> TITLE </td>
-						<td style="font-size: 1.25em;"> PRICE </td>
-						<td style="font-size: 1.25em;"> QUANTITY PURCHASED </td>
-						<td style="font-size: 1.25em;"> QUANTITY TO RETURN </td>
-						<td> </td>
+						<td> UPC </td>
+						<td> TITLE </td>
+						<td> PRICE </td>
+						<td> QUANTITY PURCHASED </td>
+						<td> QUANTITY ALREADY RETURNED </td>
+						<td> QUANTITY TO RETURN </td>
+						<td style="width:130px"> </td>
 					</tr>
 		');
 		for ($x = 0; $x < count($items); $x++) {
@@ -288,12 +309,13 @@ Hence, each page is broken down into three parts:
 			echo ("<td> " . $item["title"] . "</td>\n");
 			echo ("<td> " . $item["price"] . "</td>\n");
 			echo ("<td> " . $item["quantitypurchased"] . "</td>\n");
+			echo ("<td> " . $item["quantityalreadyreturned"] . "</td>\n");
 			echo ('<td> <input type="text" id="quantity#' . $x . '"> </td>');
 			echo ('
 					<script>
 						function confirmQuantity' . $x . '() {
 							enteredQuantity = document.getElementById("quantity#' . $x . '").value;
-							maxQuantity = ' . $item["quantitypurchased"] . ';
+							maxQuantity = ' . (intval($item["quantitypurchased"]) - intval($item["quantityalreadyreturned"])) . ';
 							if (enteredQuantity <= maxQuantity) {
 								finalQuantity = enteredQuantity;
 							}
@@ -326,12 +348,13 @@ Hence, each page is broken down into three parts:
 			<form action="return.php" method="post">
 				<table style="width:100%; text-align:left; border-bottom: 1px solid black; margin-bottom:10px;">
 					<tr>
-						<td style="font-size: 1.25em;"> UPC </td>
-						<td style="font-size: 1.25em;"> TITLE </td>
-						<td style="font-size: 1.25em;"> PRICE </td>
-						<td style="font-size: 1.25em;"> QUANTITY PURCHASED </td>
-						<td style="font-size: 1.25em;"> QUANTITY TO RETURN </td>
-						<td> </td>
+						<td> UPC </td>
+						<td> TITLE </td>
+						<td> PRICE </td>
+						<td> QUANTITY PURCHASED </td>
+						<td> QUANTITY ALREADY RETURNED </td>
+						<td> QUANTITY TO RETURN </td>
+						<td style="width:130px"> </td>
 					</tr>
 		');
 		for ($x = 0; $x < count($items); $x++) {
@@ -343,7 +366,9 @@ Hence, each page is broken down into three parts:
 			echo ("<td> " . $item["title"] . "</td>\n");
 			echo ("<td> " . $item["price"] . "</td>\n");
 			echo ("<td> " . $item["quantitypurchased"] . "</td>\n");
+			echo ("<td> " . $item["quantityalreadyreturned"] . "</td>\n");
 			echo ("<td> " . $item["quantitytoreturn"] . "</td>\n");
+			echo ('<td> <button name="removefromreturns" value = "' . $item["upc"] . '" type="submit"> Remove from Returns </button> </td>');
 			echo ("</tr>\n");
 		}
 		echo ('
@@ -364,6 +389,7 @@ Hence, each page is broken down into three parts:
 					<td>
 						' . $subtotal . '
 					</td>
+					<td style="width:75%"> </td>
 				</tr>
 				<tr>
 					<td>
@@ -400,8 +426,8 @@ Hence, each page is broken down into three parts:
 			<table style="width:100%;text-align:left; border-top: 1px solid black;">
 				<form action="return.php" method="post">
 					<tr>
-						<td> <input type="submit" name="return" value="return"> </td>
-						<td style="text-align: right"> <input type="submit" name="cancel" value="cancel"> </td>
+						<td> <input type="submit" name="return" value="Confirm"> </td>
+						<td style="text-align: right"> <input type="submit" name="cancel" value="Cancel"> </td>
 					</tr>
 				</form>
 			</table>
@@ -451,6 +477,12 @@ Hence, each page is broken down into three parts:
 			addToMessages("Receipt Not Found");
 			return;
 		}
+
+		if ($receipt["daysSincePurchase"] > 15) {
+			addToMessages("Receipt Expired");
+			return;
+		}
+		
 		
 		$_SESSION["receiptId"] = $receiptId;
 				
@@ -528,10 +560,20 @@ Hence, each page is broken down into three parts:
 		// The item entities to return
 		$purchaseItems = queryPurchaseItems($con, $receiptId);
 		
+		$returns = queryReturnsAssociatedWithReceiptId($con, $receiptId);	
+		$returnItems = queryReturnItemsForMultipleReturns($con, array_column($returns, "retId"));
+		
 		$items = queryItems($con, array_column($purchaseItems, "upc"));
 		
 		$itemsAppended = array();
-		for ($x = 0; $x < count($purchaseItems); $x++) {
+		for ($x = 0; $x < count($items); $x++) {
+			$quantityalreadyreturned = 0;
+			for ($y = 0; $y < count($returnItems); $y++) {
+				if ($returnItems[$y]["upc"] == $items[$x]["upc"]) {
+					$quantityalreadyreturned = $returnItems[$y]["quantity"];
+					break;
+				}
+			}
 			array_push($itemsAppended,
 				array(
 					"upc"=>$items[$x]["upc"],
@@ -540,9 +582,10 @@ Hence, each page is broken down into three parts:
 					"category"=>$items[$x]["result"]["category"],
 					"company"=>$items[$x]["result"]["company"],
 					"year"=>$items[$x]["result"]["year"],
-					"price"=>round($items[$x]["result"]["price"], 2),
+					"price"=>number_format($items[$x]["result"]["price"], 2),
 					"stock"=>$items[$x]["result"]["stock"],
-					"quantitypurchased"=>$purchaseItems[$x]["quantity"]
+					"quantitypurchased"=>$purchaseItems[$x]["quantity"],
+					"quantityalreadyreturned"=>$quantityalreadyreturned
 				)
 			);
 		}
@@ -584,12 +627,15 @@ Hence, each page is broken down into three parts:
 			$query->fetch();
 			
 			$quantitypurchased = 0;
-			for($x = 0; $x < count($purchasedItems); $x++) {
-				if ($purchasedItems[$x]["upc"] == $upc) {
-					$quantitypurchased = $purchasedItems[$x]["quantitypurchased"];
+			$quantityalreadyreturned = 0;
+			for($y = 0; $y < count($purchasedItems); $y++) {
+				if ($purchasedItems[$y]["upc"] == $upc) {
+					$quantitypurchased = $purchasedItems[$y]["quantitypurchased"];
+					$quantityalreadyreturned = $purchasedItems[$y]["quantityalreadyreturned"];
 					break;
 				}
 			}
+			
 			array_push($items,
 				array(
 					"upc"=>$result["upc"],
@@ -598,8 +644,9 @@ Hence, each page is broken down into three parts:
 					"category"=>$result["category"],
 					"company"=>$result["company"],
 					"year"=>$result["year"],
-					"price"=>round($result["price"], 2),
+					"price"=>number_format($result["price"], 2),
 					"quantitypurchased"=>$quantitypurchased,
+					"quantityalreadyreturned"=>$quantityalreadyreturned,
 					"quantitytoreturn"=>$returnItems[$x]["quantity"]
 				)
 			);
@@ -664,7 +711,8 @@ Hence, each page is broken down into three parts:
 		
 		
 		// Print success message
-		addToMessages ("Return Completed Successfully");
+		addToMessages ("Return Completed Successfully!");
+		addToMessages ("ReturnID: " . $returnId);
 		
 	}
 	
@@ -699,7 +747,7 @@ Hence, each page is broken down into three parts:
 		if ($subtotal == "")
 			return "";
 			
-		return round($subtotal * 0.05, 2);
+		return number_format($subtotal * 0.05, 2);
 		
 	}
 	
@@ -713,7 +761,7 @@ Hence, each page is broken down into three parts:
 		if ($subtotal == "")
 			return "";
 			
-		return round($subtotal * 0.07, 2);
+		return number_format($subtotal * 0.07, 2);
 		
 	}
 	
@@ -727,8 +775,22 @@ Hence, each page is broken down into three parts:
 		if ($subtotal == "")
 			return "";
 			
-		return round($subtotal + $gst + $pst, 2);
+		return number_format($subtotal + $gst + $pst, 2);
 		
+	}
+
+
+
+	/**************************************************************************
+		Misc SESSION variable configuration.
+	**************************************************************************/
+	function configureSESSIONVariables() {
+	
+		// If this is the first time the page is loaded (i.e. user has
+		// not yet submitted a form), then clear out the saved data.
+		if ($_SERVER["REQUEST_METHOD"] != "POST")
+			unsetSESSIONVariables();
+
 	}
 	
 	

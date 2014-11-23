@@ -145,6 +145,11 @@ Hence, each page is broken down into three parts:
 			
 		<div class="content">
 			
+			<!-- Heading -->
+			<div style="width:100%; text-align:center; padding-top:50px; padding-bottom:30px;">
+				<h2 style="font-size: 1.4em;"> LOGOUT SUCCESSFUL </h2>
+			</div>
+			
 			
 			
 		</div>
@@ -179,7 +184,6 @@ Hence, each page is broken down into three parts:
 		No changes are made to the database.
 	**************************************************************************/
 	function logout() {
-		addToMessages("Logout Successful");
 		$_SESSION["username"] = NULL;
 	}
 	
