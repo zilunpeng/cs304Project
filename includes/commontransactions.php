@@ -785,6 +785,30 @@
 		}
 		
 	}
+	
+	
+	
+	/**************************************************************************
+		Determines if the credit card is expired.
+		
+		No changes are made to the database.
+		
+		@param $expiryDate
+			The SQL-compatible expiry date to check.
+		
+		@param $con
+			The connection to the database
+	**************************************************************************/
+	function checkIfExpired($con, $expiryDate) {
+		$result;
+		$query = $con->prepare('SELECT DATEDIFF(\'' . $expiryDate . '\', (SELECT CURDATE())) AS daysTillExpiry');
+		$query->bind_result($result);
+		$query->execute();
+		$query->fetch();
+		if ($result <= 0)
+			return TRUE;
+		return FALSE;
+	}
 
 
 

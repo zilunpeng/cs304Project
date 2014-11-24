@@ -469,6 +469,11 @@ Hence, each page is broken down into three parts:
 			addToMessages("Invalid credit card expiry");
 			return;
 		}
+		
+		if (checkIfExpired($con, $expiryDate)) {
+			addToMessages("Credit card has expired");
+			return;
+		}
 
 		
 		
