@@ -504,28 +504,28 @@ Hence, each page is broken down into three parts:
 		$items = array();
 
 		// Generate query string
-		$qstr = 'SELECT item.upc, title, type, category, company, year, price, stock, sname FROM item, leadsinger WHERE item.upc=leadsinger.upc';
+		$qstr = 'SELECT item.upc, title, type, category, company, year, price, stock, sname FROM item LEFT JOIN leadsinger ON item.upc=leadsinger.upc';
 		if ($title != "") {
 			if ($category != "none") {
 				if ($leadsinger != "") {
-					$qstr = $qstr . ' AND title=? AND category=? AND sname=?';
+					$qstr = $qstr . ' WHERE title=? AND category=? AND sname=?';
 					$query = $con->prepare($qstr);
 					$query->bind_param("sss", $title, $category, $leadsinger);
 				}
 				else {
-					$qstr = $qstr . ' AND title=? AND category=?';
+					$qstr = $qstr . ' WHERE title=? AND category=?';
 					$query = $con->prepare($qstr);
 					$query->bind_param("ss", $title, $category);
 				}
 			}
 			else {
 				if ($leadsinger != "") {
-					$qstr = $qstr . ' AND title=? AND sname=?';
+					$qstr = $qstr . ' WHERE title=? AND sname=?';
 					$query = $con->prepare($qstr);
 					$query->bind_param("ss", $title, $leadsinger);
 				}
 				else {
-					$qstr = $qstr . ' AND title=?';
+					$qstr = $qstr . ' WHERE title=?';
 					$query = $con->prepare($qstr);
 					$query->bind_param("s", $title);
 				}
@@ -534,19 +534,19 @@ Hence, each page is broken down into three parts:
 		else {
 			if ($category != "none") {
 				if ($leadsinger != "") {
-					$qstr = $qstr . ' AND category=? AND sname=?';
+					$qstr = $qstr . ' WHERE category=? AND sname=?';
 					$query = $con->prepare($qstr);
 					$query->bind_param("ss", $category, $leadsinger);
 				}
 				else {
-					$qstr = $qstr . ' AND category=?';
+					$qstr = $qstr . ' WHERE category=?';
 					$query = $con->prepare($qstr);
 					$query->bind_param("s", $category);
 				}
 			}
 			else {
 				if ($leadsinger != "") {
-					$qstr = $qstr . ' AND sname=?';
+					$qstr = $qstr . ' WHERE sname=?';
 					$query = $con->prepare($qstr);
 					$query->bind_param("s", $leadsinger);
 				}
