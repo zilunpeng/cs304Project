@@ -71,7 +71,7 @@ Hence, each page is broken down into three parts:
 
 			<div class="content">
 			
-				<div class="header">ORDERS</div>
+				<div class="heading">ORDERS</div>
 				<!-- Orders -->
 				<?php global $orders; printOrders($orders); ?>
 				
@@ -92,10 +92,22 @@ Hence, each page is broken down into three parts:
 	}
 
 	function printOrders($orders) {
-		echo "<pre>";
+		echo "<table style='width:100%; text-align:center;'>";
+		echo "<tr style=\"font-weight: bold\">";
+		echo "<th>Order ID</th>";
+		echo "<th>Customer Name</th>";
+		echo "<th>Expected Delivery Date</th>";
+		echo "<th>Date Delivered</th>";
+		
 		while($row = mysqli_fetch_array($orders, MYSQL_ASSOC)) {
-			print_r($row);
+			echo "<tr>";
+			echo "<td><a href=\"order.php?receiptId=".$row["receiptId"]."\">" . $row["receiptId"] . "</a></td>";
+			echo "<td>" . $row["name"] . "</td>";
+			echo "<td>" . $row["expectedDate"] . "</td>";
+			echo "<td>" . $row["deliveredDate"] . "</td>";
+			echo "</tr>";
 		}
-		echo "</pre>";
+		
+		echo "</table>";
 	}
 ?>

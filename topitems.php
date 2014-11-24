@@ -142,7 +142,6 @@ Hence, each page is broken down into three parts:
 		$count = 0;
 		
 		while ($row = mysqli_fetch_array($items, MYSQL_ASSOC)) {
-			// print_r($row);
 			$count += 1;
 			echo "<tr>";
 			echo "<td>" . $count . "</td>";
@@ -150,6 +149,7 @@ Hence, each page is broken down into three parts:
 			echo "<td>" . $row["company"] . "</td>";
 			echo "<td>" . $row["stock"] . "</td>";
 			echo "<td>" . $row["quantity"] . "</td>";
+			echo "</tr>";
 		}
 		
 		echo "</table>";
