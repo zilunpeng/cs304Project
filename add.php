@@ -108,14 +108,18 @@ Hence, each page is broken down into three parts:
 			$statement = $con->prepare("UPDATE item SET stock=stock+? WHERE upc=?");
 			$statement->bind_param("is",$item["qty"],$item["upc"]);
 		}
-		$result = $statement->execute();
-	
-		if ($result)
-			addToMessages("Item UPC=" . $item["upc"] . " has been successfully updated");
-		else {
-			global $formIsValid;
-			addToMessages("Unknown error encountered while updating item");
-			$formIsValid = false;
+		
+		if (queryItem($con, $item["upc"]) != NULL) {
+			$result = $statement->execute();	
+			if ($result)
+				addToMessages("Item UPC=" . $item["upc"] . " has been successfully updated");
+			else {
+				global $formIsValid;
+				addToMessages("Unknown error encountered while updating item");
+				$formIsValid = false;
+			}
+		} else {
+			addToMessages("Item with UPC=".$item["upc"]." does not exist");
 		}
 	}
 	
