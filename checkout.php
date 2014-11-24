@@ -313,12 +313,12 @@ Hence, each page is broken down into three parts:
 				<form action="checkout.php" method="post">
 					<tr>
 						<td style="width:140px;"> Credit Card Number: </td>
-						<td style="width:100px; padding-right:5px;"> <input type="text" name="creditcardnumber"> </td>
+						<td style="width:100px; padding-right:5px;"> <input type="text" maxlength="16" name="creditcardnumber"> </td>
 						<td style="width:40%"> </td>
 					</tr>
 					<tr>
 						<td> Card Expiry (mm/yy): </td>
-						<td> <input type="text" name="creditcardexpiry"> </td>
+						<td> <input type="text" name="creditcardexpiry" maxlength="5"> </td>
 					</tr>
 					<tr>
 						<td> <input type="submit" name="purchase" value="Purchase"> </td>
