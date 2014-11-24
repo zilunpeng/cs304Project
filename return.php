@@ -556,6 +556,12 @@ Hence, each page is broken down into three parts:
 		
 		if (!isset($receiptId) || $receiptId == null || $receiptId == "")
 			return array();
+
+		$receipt = queryPurchase($con, $receiptId);
+		
+		if ($receipt["daysSincePurchase"] > 15) {
+			return array();
+		}
 	
 		// The item entities to return
 		$purchaseItems = queryPurchaseItems($con, $receiptId);
@@ -597,7 +603,7 @@ Hence, each page is broken down into three parts:
 	
 	
 	/**************************************************************************
-		Retrieves the full item information for each item that was purchased.
+		Retrieves the full item information for each item that was returned.
 		No changes are made to the database.
 		
 		On success, an array of items is returned.

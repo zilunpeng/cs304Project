@@ -16,7 +16,8 @@ create table item
 	price float,
 	stock integer,
     primary key (upc),
-    check (type = 'rock' or type = 'pop' or type = 'rap' or type = 'country' or type = 'country' or type = 'classical' or type = 'new age' or type = 'instrumental'));
+    check (type = 'cd' or type = 'dvd'),
+    check (category = 'rock' or category = 'pop' or category = 'rap' or category = 'country' or category = 'country' or category = 'classical' or category = 'new age' or category = 'instrumental'));
 
  
 drop table if exists leadSinger;
@@ -247,23 +248,6 @@ insert into hasSong
 values('025', 'cd16'
  );
  
-
-insert into purchaseItem
-values(1, '001', 5	
-);
-
-insert into purchaseItem
-values(2, '013', 2	
-);
-
-insert into purchaseItem
-values(6, '020', 7	
-);
-
-insert into purchaseItem
-values(9, '005', 10	
-);
-
 insert into customer
 values('001', 'Bennet Abraham', '12345', 
 '415-658-9932', '6223 Bateman St Berkeley CA');
@@ -303,13 +287,5 @@ values('009', 'Stringer Dirk', '12345',
 insert into customer
 values('010', 'Tony Allen', '12345', 
 '425-843-2891', '3672 Alto Av. Oakland CA');
-
-insert into returnItem
-values(1, '020', 1 
-);
-
-insert into returnItem
-values(2, '005', 2
-);
 
 commit;
