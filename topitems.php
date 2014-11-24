@@ -21,15 +21,31 @@ Hence, each page is broken down into three parts:
 
 	// Connect to database
 	$con = connectToDatabase();
-	
-	// Perform requested operations from HTML form here
-	if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
+	// Perform requested operations from HTML form here
+	if ($_SERVER["REQUEST_METHOD"] == "GET") {
+		$validQuery = true;
+		if (!isset($_GET["date"])) {
+			addToMessages("You must enter a date");
+			$validQuery = false;
+		}
+		if (!isset($_GET["number"])) {
+			global $number;
+			addToMessages("Number of items to list was not entered. Defaulted to 5");
+		}
+
+		if ($validQuery) {
+			global $items, $con;
+			if (!isset($_GET["number"]))
+				$number = 5;
+			else
+				$number = $_GET["number"];
+			$items = getSalesReport($con, $_GET["date"], $number);
+		}
 	}
 	
 	// Perform all remaining database queries here
-	$items = getItems($con);
-	
+
 	// Close database connection
 	disconnectFromDatabase($con)
 ?>
@@ -48,11 +64,20 @@ Hence, each page is broken down into three parts:
 	<link rel="stylesheet" type="text/css" href="includes/styles.css" />
 	<link rel="text/javascript" type="text/css" href="includes/commonfunctions.css" />
 	
+	<!-- Datepicker Stuff -->
+	<link rel="stylesheet" href="//code.jquery.com/ui/1.11.2/themes/smoothness/jquery-ui.css">
+	<script src="//code.jquery.com/jquery-1.10.2.js"></script>
+	<script src="//code.jquery.com/ui/1.11.2/jquery-ui.js"></script>
+	
 	<!-- Additional JavaScript functions -->
-	<script></script>
+	<script>
+	$(function() {
+		$( "#datepicker" ).datepicker();
+	});
+	</script>
 
 	<!-- Page title -->
-	<title> View Cart </title>
+	<title>Daily Sales Report</title>
 </head>
 
 <body>
@@ -67,7 +92,6 @@ Hence, each page is broken down into three parts:
 
 			<!-- Designated area for all error/success messages (top of page) -->
 			<div class="messages">
-				<!-- heading -->
 				Error/Success Messages:<br>
 
 				<!-- Error/Success messages (if any) -->
@@ -76,13 +100,16 @@ Hence, each page is broken down into three parts:
 
 			<div class="content">
 			
-				<div class="header">ITEMS LIST</div>
+				<div class="heading">TOP ITEMS</div>
+				<form action="topitems.php" method="get">
+					<table>
+						<tr><td align="right" style="padding-right:5px;">Date</td><td align="left"><input type="text" id="datepicker" name="date" value="<?php echo (isset($_GET["date"]) ? $_GET["date"] : "" );?>" style="margin-right:20px;"></td><td>Number of Items</td><td><input type="text" name="number" style="width:40px;margin-right:20px;" value="<?php echo (isset($_GET["number"]) ? $_GET["number"] : "5" );?>"></td><td><button type="submit">Apply</button></td></tr>
+					</table>
+				</form>
+				<br>
 				<!-- Items -->
-				<?php createItemList($items); ?>
-				
-				<div class="header">ADD ITEM</div>
-				<!-- Add Item Form -->
-				<?php createAddItemForm(); ?>
+				<?php if (isset($_GET["date"])) { global $items; showSalesReport($items); } ?>
+
 			</div>
 		</div>
 	</div>
@@ -93,8 +120,39 @@ Hence, each page is broken down into three parts:
 	// MODEL
 	// ===============
 
-	function handleAddItem() {
+	function getSalesReport($con, $date, $number) {
+		//$mysql_date = date( 'Y-m-d', strtotime($date) );
+		$statement = $con->prepare("SELECT title, company, stock, quantity FROM purchase INNER JOIN purchaseitem ON purchase.receiptId=purchaseitem.receiptId INNER JOIN item ON purchaseitem.upc=item.upc WHERE purchaseDate = STR_TO_DATE(?, '%m/%d/%Y') GROUP BY item.upc ORDER BY purchaseitem.quantity DESC LIMIT ?");
+		$statement->bind_param("si", $date, $number);
 
+		$statement->execute();
+		$result = $statement->get_result();
+		return $result;
+	}
+	
+	function showSalesReport($items) {
+		echo "<table style='width:100%; text-align:center;'>";
+		echo "<tr style=\"font-weight: bold\">";
+		echo "<th>#</th>";
+		echo "<th>Title</th>";
+		echo "<th>Company</th>";
+		echo "<th>Amount in Stock</th>";
+		echo "<th>Quantity Sold</th>";
+
+		$count = 0;
+		
+		while ($row = mysqli_fetch_array($items, MYSQL_ASSOC)) {
+			// print_r($row);
+			$count += 1;
+			echo "<tr>";
+			echo "<td>" . $count . "</td>";
+			echo "<td>" . $row["title"] . "</td>";
+			echo "<td>" . $row["company"] . "</td>";
+			echo "<td>" . $row["stock"] . "</td>";
+			echo "<td>" . $row["quantity"] . "</td>";
+		}
+		
+		echo "</table>";
 	}
 
 ?>

@@ -129,6 +129,8 @@ Hence, each page is broken down into three parts:
 		$currentCategory = "";
 		$categoryCount = 0;
 		$categoryTotal = 0;
+		$dailyTotal = 0;
+		$dailyCount = 0;
 		
 		while ($row = mysqli_fetch_array($items, MYSQL_ASSOC)) {
 			if ($currentCategory != $row["category"]) {
@@ -142,6 +144,9 @@ Hence, each page is broken down into three parts:
 			$categoryCount += $row["SUM(purchaseitem.quantity)"];
 			$categoryTotal += $row["price*SUM(purchaseitem.quantity)"];
 			
+			$dailyCount += $categoryCount;
+			$dailyTotal += $categoryTotal;
+			
 			echo "<tr>";
 			echo "<td>" . $row["upc"] . "</td>";
 			echo "<td>" . $row["category"] . "</td>";
@@ -153,14 +158,19 @@ Hence, each page is broken down into three parts:
 		
 		showCategoryTotal($categoryCount, $categoryTotal);
 		
+		echo "<tr class=\"blank_row\"><td colspan=\"5\"></td></tr>";
+		echo "<td colspan=\"2\"><td class=total>Daily Total</td>";
+		echo "<td class=total>" . $dailyCount . "</td>";
+		echo "<td class=total>" . number_format($dailyTotal,2) . "</td>";
+		
 		echo "</table>";
 	}
 	
 	function showCategoryTotal($count, $total) {
 		echo "<tr>";
-		echo "<td colspan=\"2\"><td style=\"font-weight:bold;\">Total</td>";
-		echo "<td>" . $count . "</td>";
-		echo "<td>" . number_format($total,2) . "</td>";
+		echo "<td colspan=\"2\"><td class=total>Total</td>";
+		echo "<td class=total>" . $count . "</td>";
+		echo "<td class=total>" . number_format($total,2) . "</td>";
 		echo "</tr>";
 		echo "<tr class=\"blank_row\"><td colspan=\"5\"></td></tr>";
 	}

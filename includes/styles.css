@@ -61,8 +61,13 @@
 	font-weight: bold;
 }
 
-.blank_row {
+tr.blank_row {
 	height: 15px !important;
+}
+
+td.total {
+	font-weight: bold;
+	border-top: 1px solid black;
 }
 
 /*
