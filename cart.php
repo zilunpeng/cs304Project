@@ -120,6 +120,10 @@ Hence, each page is broken down into three parts:
 	<script>
 		function confirmQuantity(stock) {
 			'use strict';
+			if (stock == 0) {
+				alert("Sorry, we're currently out of stock for that item");
+				return false;
+			}
 			if (confirm("There are only " + stock + " in stock.\nDo you want to accept this quantity?"))
 				return true;
 			return false;
