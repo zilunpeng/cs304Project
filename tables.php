@@ -135,6 +135,9 @@ Hence, each page is broken down into three parts:
 			case "returns":
 				$tbl = "returns";
 				break;
+			default:
+				addToMessages($tableName . " is not a valid table name. Defaulting to item");
+				$tbl = "item";
 		}
 		$sql = "SELECT * FROM $tbl";
 		return $sql;
