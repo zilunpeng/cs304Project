@@ -30,6 +30,12 @@ Hence, each page is broken down into three parts:
 
 
 	session_start();
+	
+	
+	
+	// Initialize the shopping cart
+	if (!isset($_SESSION["cart"]))
+		$_SESSION["cart"] = array();
 
 
 
