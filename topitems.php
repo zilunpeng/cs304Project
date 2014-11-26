@@ -22,24 +22,25 @@ Hence, each page is broken down into three parts:
 	// Connect to database
 	$con = connectToDatabase();
 
+	$number = 5;
+	
 	// Perform requested operations from HTML form here
 	if ($_SERVER["REQUEST_METHOD"] == "GET") {
-		$validQuery = true;
-		if (!isset($_GET["date"])) {
+		$validQuery = false;
+		if (isset($_GET["date"]) && $_GET["date"] != "") {
+			$validQuery = true;
+		} else {
 			addToMessages("You must enter a date");
-			$validQuery = false;
 		}
-		if (!isset($_GET["number"])) {
+		if (isset($_GET["number"]) && $_GET["number"] != "") {
 			global $number;
+			$number = $_GET["number"];
+		} else {
 			addToMessages("Number of items to list was not entered. Defaulted to 5");
 		}
 
 		if ($validQuery) {
 			global $items, $con;
-			if (!isset($_GET["number"]))
-				$number = 5;
-			else
-				$number = $_GET["number"];
 			$items = getSalesReport($con, $_GET["date"], $number);
 		}
 	}
@@ -108,7 +109,7 @@ Hence, each page is broken down into three parts:
 				</form>
 				<br>
 				<!-- Items -->
-				<?php if (isset($_GET["date"])) { global $items; showSalesReport($items); } ?>
+				<?php if ($validQuery) { global $items; showSalesReport($items); } ?>
 
 			</div>
 		</div>
