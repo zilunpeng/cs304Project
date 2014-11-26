@@ -41,6 +41,9 @@
 				<li><a href="topitems.php"> Top Selling Items </a></li>
 			</ul>
 		</li>
+		<li>
+			<a href="tables.php">View Tables</a>
+		</li>
 	</ul>
 </div>
 	
